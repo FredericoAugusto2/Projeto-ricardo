@@ -1,0 +1,66 @@
+{% extends "base.html" %}
+{% load hotel_extras %}
+{% block titulo %}Reserva {{ reserva.codigo }}{% endblock %}
+{% block cabecalho %}Reservas{% endblock %}
+{% block conteudo %}
+<div class="cabecalho-pagina">
+  <div><a href="{% url 'reserva_lista' %}" class="link-voltar"><i class="fa-solid fa-arrow-left me-1"></i> Voltar</a>
+    <h2>Reserva {{ reserva.codigo }} {% include "partials/status_badge.html" with valor=reserva.status rotulo=reserva.get_status_display %}</h2>
+    <p class="text-muted mb-0">Registrada em {{ reserva.data_reserva|date:"d/m/Y \à\s H:i" }} · origem: {{ reserva.get_origem_display }}</p></div>
+  <div class="d-flex gap-2 flex-wrap">
+    {% if reserva.pode_confirmar %}
+      <form method="post" action="{% url 'reserva_confirmar' reserva.pk %}">{% csrf_token %}<button class="btn btn-success"><i class="fa-solid fa-check me-1"></i> Confirmar</button></form>
+    {% endif %}
+    {% if reserva.pode_checkin %}
+      <form method="post" action="{% url 'checkin_realizar' reserva.pk %}" data-confirmar="Confirmar a chegada do hóspede?">{% csrf_token %}<button class="btn btn-gold"><i class="fa-solid fa-right-to-bracket me-1"></i> Check-in</button></form>
+    {% endif %}
+    {% if reserva.pode_checkout %}
+      <form method="post" action="{% url 'checkout_realizar' reserva.pk %}" data-confirmar="Realizar o check-out e liberar o quarto?">{% csrf_token %}<button class="btn btn-gold"><i class="fa-solid fa-right-from-bracket me-1"></i> Check-out</button></form>
+    {% endif %}
+    {% if reserva.pode_editar %}<a href="{% url 'reserva_editar' reserva.pk %}" class="btn btn-navy"><i class="fa-solid fa-pen me-1"></i> Editar</a>{% endif %}
+    {% if reserva.pode_cancelar %}
+      <form method="post" action="{% url 'reserva_cancelar' reserva.pk %}" data-confirmar="Tem certeza de que deseja cancelar esta reserva?">{% csrf_token %}<button class="btn btn-outline-danger"><i class="fa-solid fa-ban me-1"></i> Cancelar reserva</button></form>
+    {% endif %}
+    {% if reserva.status == 'FINALIZADA' %}<a href="{% url 'checkout_resumo' reserva.pk %}" class="btn btn-outline-navy"><i class="fa-solid fa-receipt me-1"></i> Resumo da hospedagem</a>{% endif %}
+  </div>
+</div>
+
+<div class="linha-tempo mb-4">
+  {% with s=reserva.status %}
+  <div class="etapa {% if s != 'CANCELADA' %}feita{% endif %}"><i class="fa-solid fa-file-pen"></i><span>Solicitada</span></div>
+  <div class="etapa {% if s == 'CONFIRMADA' or s == 'EM_ANDAMENTO' or s == 'FINALIZADA' %}feita{% endif %}"><i class="fa-solid fa-calendar-check"></i><span>Confirmada</span></div>
+  <div class="etapa {% if s == 'EM_ANDAMENTO' or s == 'FINALIZADA' %}feita{% endif %}"><i class="fa-solid fa-right-to-bracket"></i><span>Check-in</span></div>
+  <div class="etapa {% if s == 'FINALIZADA' %}feita{% endif %}"><i class="fa-solid fa-flag-checkered"></i><span>Finalizada</span></div>
+  {% if s == 'CANCELADA' %}<div class="etapa cancelada"><i class="fa-solid fa-ban"></i><span>Cancelada</span></div>{% endif %}
+  {% endwith %}
+</div>
+
+<div class="row g-4">
+  <div class="col-lg-8">
+    <div class="card card-painel mb-4">
+      <div class="card-header"><h3><i class="fa-solid fa-circle-info"></i> Dados da reserva</h3></div>
+      <div class="card-body"><div class="row g-4">
+        <div class="col-sm-6"><small class="text-muted d-block">Hóspede</small><a href="{{ reserva.hospede.get_absolute_url }}" class="fw-semibold link-navy">{{ reserva.hospede.nome_completo }}</a><small class="d-block text-muted">CPF {{ reserva.hospede.cpf|cpf }} · {{ reserva.hospede.telefone|telefone }}</small></div>
+        <div class="col-sm-6"><small class="text-muted d-block">Quarto</small><a href="{{ reserva.quarto.get_absolute_url }}" class="fw-semibold link-navy">{{ reserva.quarto.numero }} – {{ reserva.quarto.get_tipo_display }}</a><small class="d-block text-muted">Capacidade: {{ reserva.quarto.capacidade }} pessoas</small></div>
+        <div class="col-sm-4"><small class="text-muted d-block">Entrada prevista</small><strong>{{ reserva.data_checkin|date:"d/m/Y" }}</strong></div>
+        <div class="col-sm-4"><small class="text-muted d-block">Saída prevista</small><strong>{{ reserva.data_checkout|date:"d/m/Y" }}</strong></div>
+        <div class="col-sm-4"><small class="text-muted d-block">Hóspedes</small><strong>{{ reserva.quantidade_hospedes }}</strong></div>
+        <div class="col-sm-6"><small class="text-muted d-block">Check-in realizado</small><strong>{{ reserva.checkin_realizado_em|date:"d/m/Y H:i"|default:"—" }}</strong></div>
+        <div class="col-sm-6"><small class="text-muted d-block">Check-out realizado</small><strong>{{ reserva.checkout_realizado_em|date:"d/m/Y H:i"|default:"—" }}</strong></div>
+        <div class="col-12"><small class="text-muted d-block">Observações</small>{{ reserva.observacoes|default:"Nenhuma observação."|linebreaksbr }}</div>
+      </div></div>
+    </div>
+  </div>
+  <div class="col-lg-4">
+    <div class="card card-resumo">
+      <div class="card-body">
+        <h3 class="h6 text-uppercase letra-espacada mb-3"><i class="fa-solid fa-receipt me-1"></i> Valores</h3>
+        <div class="resumo-linha"><span>Diárias</span><strong>{{ reserva.diarias }}</strong></div>
+        <div class="resumo-linha"><span>Diária registrada</span><strong>{{ reserva.valor_diaria|brl }}</strong></div>
+        <div class="resumo-total"><span>Valor total</span><strong>{{ reserva.valor_total|brl }}</strong></div>
+        <p class="small mt-3 mb-0 opacity-75">Valor previsto da hospedagem. O sistema não registra pagamentos.</p>
+      </div>
+    </div>
+  </div>
+</div>
+{% endblock %}

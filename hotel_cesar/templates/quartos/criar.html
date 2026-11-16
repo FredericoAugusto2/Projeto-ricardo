@@ -1,0 +1,8 @@
+{% extends "base.html" %}
+{% block titulo %}Novo quarto{% endblock %}
+{% block cabecalho %}Quartos{% endblock %}
+{% block conteudo %}
+{% url 'quarto_lista' as voltar %}
+{% include "partials/cabecalho_pagina.html" with titulo="Cadastrar quarto" subtitulo="O número do quarto deve ser único." voltar=voltar %}
+{% include "quartos/_form.html" with voltar=voltar %}
+{% endblock %}

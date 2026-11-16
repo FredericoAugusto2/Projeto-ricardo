@@ -1,0 +1,68 @@
+{% extends "base.html" %}
+{% load hotel_extras %}
+{% block titulo %}Quarto {{ quarto.numero }}{% endblock %}
+{% block cabecalho %}Quartos{% endblock %}
+{% block conteudo %}
+<div class="cabecalho-pagina">
+  <div><a href="{% url 'quarto_lista' %}" class="link-voltar"><i class="fa-solid fa-arrow-left me-1"></i> Voltar</a>
+    <h2>Quarto {{ quarto.numero }} <small class="text-muted fw-normal">· {{ quarto.get_tipo_display }}</small></h2></div>
+  <div class="d-flex gap-2 flex-wrap">
+    {% if quarto.status != 'MANUTENCAO' %}<a href="{% url 'reserva_criar' %}?quarto={{ quarto.pk }}" class="btn btn-gold"><i class="fa-solid fa-calendar-plus me-1"></i> Nova reserva</a>{% endif %}
+    <a href="{% url 'quarto_editar' quarto.pk %}" class="btn btn-navy"><i class="fa-solid fa-pen me-1"></i> Editar</a>
+    {% if perms.reservas.delete_quarto %}<a href="{% url 'quarto_excluir' quarto.pk %}" class="btn btn-outline-danger"><i class="fa-solid fa-trash-can me-1"></i> Excluir</a>{% endif %}
+  </div>
+</div>
+<div class="row g-4">
+  <div class="col-lg-5">
+    <div class="card card-painel overflow-hidden">
+      <img src="{{ quarto.imagem_url }}" alt="Quarto {{ quarto.numero }}" class="img-detalhe">
+      <dl class="lista-dados">
+        <dt>Status</dt><dd>{% include "partials/status_badge.html" with valor=quarto.status rotulo=quarto.get_status_display %}</dd>
+        <dt>Tipo</dt><dd>{{ quarto.get_tipo_display }}</dd>
+        <dt>Capacidade</dt><dd>{{ quarto.capacidade }} pessoa{{ quarto.capacidade|pluralize }}</dd>
+        <dt>Diária atual</dt><dd class="fw-bold">{{ quarto.valor_diaria|brl }}</dd>
+        <dt>Descrição</dt><dd>{{ quarto.descricao|default:"—"|linebreaksbr }}</dd>
+      </dl>
+      <div class="card-body border-top">
+        {% if quarto.status == 'OCUPADO' %}
+          {% with atual=quarto.hospedagem_atual %}
+          <p class="mb-2 small text-muted">Hóspede atual</p>
+          {% if atual %}<a href="{{ atual.get_absolute_url }}" class="fw-semibold link-navy">{{ atual.hospede }}</a> <small class="text-muted">até {{ atual.data_checkout|date:"d/m/Y" }}</small>{% endif %}
+          <p class="small text-muted mt-2 mb-0">O quarto será liberado no check-out.</p>
+          {% endwith %}
+        {% else %}
+        <form method="post" action="{% url 'quarto_status' quarto.pk %}" class="d-flex gap-2 align-items-end">
+          {% csrf_token %}
+          <div class="flex-grow-1"><label class="form-label small">Alterar status</label>
+            <select name="status" class="form-select">{% for v, r in status_opcoes %}<option value="{{ v }}" {% if quarto.status == v %}selected{% endif %}>{{ r }}</option>{% endfor %}</select></div>
+          <button class="btn btn-navy" type="submit">Aplicar</button>
+        </form>
+        {% endif %}
+      </div>
+    </div>
+  </div>
+  <div class="col-lg-7">
+    <div class="card card-painel mb-4">
+      <div class="card-header"><h3><i class="fa-solid fa-calendar-week"></i> Reservas ativas e futuras</h3></div>
+      {% if proximas %}
+      <div class="table-responsive"><table class="table tabela mb-0 align-middle">
+        <thead><tr><th>Código</th><th>Hóspede</th><th>Período</th><th>Status</th></tr></thead>
+        <tbody>{% for r in proximas %}<tr>
+          <td><a href="{{ r.get_absolute_url }}" class="fw-semibold link-navy">{{ r.codigo }}</a></td><td>{{ r.hospede }}</td>
+          <td class="text-nowrap">{{ r.data_checkin|date:"d/m/Y" }} – {{ r.data_checkout|date:"d/m/Y" }}</td>
+          <td>{% include "partials/status_badge.html" with valor=r.status rotulo=r.get_status_display %}</td></tr>{% endfor %}</tbody>
+      </table></div>
+      {% else %}{% include "partials/vazio.html" with icone="fa-calendar" titulo="Sem reservas futuras" texto="Este quarto está livre nas próximas datas." %}{% endif %}
+    </div>
+    <div class="card card-painel">
+      <div class="card-header"><h3><i class="fa-solid fa-clock-rotate-left"></i> Histórico</h3></div>
+      {% if historico %}
+      <ul class="list-group list-group-flush">{% for r in historico %}
+        <li class="list-group-item d-flex justify-content-between align-items-center">
+          <span><a href="{{ r.get_absolute_url }}" class="link-navy fw-semibold">{{ r.codigo }}</a> · {{ r.hospede }} <small class="text-muted">{{ r.data_checkin|date:"d/m/Y" }}</small></span>
+          {% include "partials/status_badge.html" with valor=r.status rotulo=r.get_status_display %}</li>{% endfor %}</ul>
+      {% else %}<p class="text-muted text-center py-4 mb-0">Sem histórico.</p>{% endif %}
+    </div>
+  </div>
+</div>
+{% endblock %}

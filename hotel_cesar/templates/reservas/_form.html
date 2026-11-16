@@ -1,0 +1,58 @@
+{% load hotel_extras %}
+<form method="post" novalidate id="formReserva">
+  {% csrf_token %}
+  {% include "partials/erros_form.html" %}
+  <div class="row g-4">
+    <div class="col-xl-8">
+      <div class="card card-painel mb-3"><div class="card-header"><h3><i class="fa-solid fa-user-tag"></i> Hóspede e quarto</h3></div>
+        <div class="card-body"><div class="row g-3">
+          {% include "partials/campo.html" with campo=form.hospede col="col-md-6" %}
+          {% include "partials/campo.html" with campo=form.quarto col="col-md-6" %}
+        </div>
+        <p class="small text-muted mt-2 mb-0">Hóspede não cadastrado? <a href="{% url 'hospede_criar' %}" class="link-gold">Cadastre aqui</a>. Quartos em manutenção não aparecem na lista.</p>
+        </div>
+      </div>
+      <div class="card card-painel mb-3"><div class="card-header"><h3><i class="fa-solid fa-calendar-days"></i> Período e ocupação</h3></div>
+        <div class="card-body"><div class="row g-3">
+          {% include "partials/campo.html" with campo=form.data_checkin col="col-md-4" %}
+          {% include "partials/campo.html" with campo=form.data_checkout col="col-md-4" %}
+          {% include "partials/campo.html" with campo=form.quantidade_hospedes col="col-md-4" %}
+          {% include "partials/campo.html" with campo=form.observacoes col="col-12" %}
+        </div></div>
+      </div>
+    </div>
+    <div class="col-xl-4">
+      <div class="card card-resumo sticky-xl-top" style="top:90px">
+        <div class="card-body">
+          <h3 class="h6 text-uppercase letra-espacada mb-3"><i class="fa-solid fa-receipt me-1"></i> Resumo da reserva</h3>
+          {% if resumo %}
+            <div class="resumo-linha"><span>Hóspede</span><strong>{{ resumo.hospede }}</strong></div>
+            <div class="resumo-linha"><span>Quarto</span><strong>{{ resumo.quarto.numero }} · {{ resumo.quarto.get_tipo_display }}</strong></div>
+            <div class="resumo-linha"><span>Período</span><strong>{{ resumo.entrada|date:"d/m/Y" }} – {{ resumo.saida|date:"d/m/Y" }}</strong></div>
+            <div class="resumo-linha"><span>Hóspedes</span><strong>{{ resumo.quantidade }}</strong></div>
+            <div class="resumo-linha"><span>Diárias</span><strong>{{ resumo.diarias }}</strong></div>
+            <div class="resumo-linha"><span>Valor da diária</span><strong>{{ resumo.valor_diaria|brl }}</strong></div>
+            <div class="resumo-total"><span>Valor total</span><strong>{{ resumo.valor_total|brl }}</strong></div>
+            <p class="small mt-2 mb-0 text-success"><i class="fa-solid fa-circle-check me-1"></i> Dados validados pelo servidor. Clique em salvar para concluir.</p>
+          {% else %}
+            <div id="resumoDinamico">
+              <div class="resumo-linha"><span>Diárias</span><strong data-resumo-diarias>—</strong></div>
+              <div class="resumo-linha"><span>Valor da diária</span><strong data-resumo-diaria>—</strong></div>
+              <div class="resumo-total"><span>Valor total estimado</span><strong data-resumo-total>—</strong></div>
+              <p class="small mt-2 mb-0 text-warning d-none" data-resumo-alerta></p>
+            </div>
+            <p class="small text-muted mt-3 mb-0">Use <strong>Calcular resumo</strong> para validar disponibilidade e valores antes de salvar.</p>
+          {% endif %}
+          <hr>
+          <div class="d-grid gap-2">
+            <button type="submit" name="acao" value="previsualizar" class="btn btn-outline-navy"><i class="fa-solid fa-calculator me-1"></i> Calcular resumo</button>
+            <button type="submit" name="acao" value="salvar" class="btn btn-gold"><i class="fa-solid fa-floppy-disk me-1"></i> Salvar reserva</button>
+            <a href="{{ voltar }}" class="btn btn-light border">Cancelar</a>
+          </div>
+          {% if reserva and reserva.pk %}<p class="small text-muted mt-3 mb-0"><i class="fa-solid fa-lock me-1"></i> A diária registrada ({{ reserva.valor_diaria|brl }}) é mantida, a menos que o quarto seja trocado.</p>{% endif %}
+        </div>
+      </div>
+    </div>
+  </div>
+</form>
+{{ precos_json|json_script:"precos-quartos" }}

@@ -1,0 +1,64 @@
+{% extends "base.html" %}
+{% load hotel_extras %}
+{% block titulo %}Reservas{% endblock %}
+{% block cabecalho %}Reservas{% endblock %}
+{% block conteudo %}
+<div class="cabecalho-pagina">
+  <div><h2>Gerenciamento de Reservas</h2><p class="text-muted mb-0">Acompanhe e gerencie todas as reservas do hotel.</p></div>
+  <div class="d-flex gap-2 flex-wrap">
+    <a href="{% url 'disponibilidade' %}" class="btn btn-outline-navy"><i class="fa-solid fa-magnifying-glass me-1"></i> Consultar disponibilidade</a>
+    <a href="{% url 'reserva_criar' %}" class="btn btn-gold"><i class="fa-solid fa-plus me-1"></i> Nova reserva</a>
+  </div>
+</div>
+<div class="d-flex flex-column flex-xl-row gap-3 justify-content-between mb-3">
+  <div class="filtro-abas">
+    {% for valor, rotulo, total in filtros_status %}
+      <a href="?status={{ valor }}{% if request.GET.q %}&q={{ request.GET.q|urlencode }}{% endif %}" class="{% if status_atual == valor %}ativo{% endif %}">{{ rotulo }} <span>{{ total }}</span></a>
+    {% endfor %}
+  </div>
+  <form method="get" class="d-flex gap-2">
+    <input type="hidden" name="status" value="{{ status_atual }}">
+    <input type="search" name="q" value="{{ request.GET.q }}" class="form-control" placeholder="Código, hóspede, CPF ou quarto" style="min-width:260px">
+    <button class="btn btn-navy" type="submit" aria-label="Pesquisar"><i class="fa-solid fa-magnifying-glass"></i></button>
+  </form>
+</div>
+<div class="card card-painel">
+  {% if reservas %}
+  <div class="table-responsive">
+    <table class="table tabela mb-0 align-middle">
+      <thead><tr><th>Código</th><th>Hóspede</th><th>Quarto</th><th>Entrada</th><th>Saída</th><th>Diárias</th><th>Valor total</th><th>Status</th><th class="text-end">Ações</th></tr></thead>
+      <tbody>
+      {% for r in reservas %}
+        <tr>
+          <td><a href="{{ r.get_absolute_url }}" class="fw-semibold link-navy">{{ r.codigo }}</a>{% if r.origem == 'SITE' %}<small class="d-block text-muted"><i class="fa-solid fa-globe"></i> site</small>{% endif %}</td>
+          <td>{{ r.hospede.nome_completo }}</td>
+          <td>{{ r.quarto.numero }}</td>
+          <td class="text-nowrap">{{ r.data_checkin|date:"d/m/Y" }}</td>
+          <td class="text-nowrap">{{ r.data_checkout|date:"d/m/Y" }}</td>
+          <td>{{ r.diarias }}</td>
+          <td class="text-nowrap">{{ r.valor_total|brl }}</td>
+          <td>{% include "partials/status_badge.html" with valor=r.status rotulo=r.get_status_display %}</td>
+          <td class="text-end text-nowrap acoes">
+            <a href="{{ r.get_absolute_url }}" class="btn btn-sm btn-acao" title="Visualizar"><i class="fa-solid fa-eye"></i></a>
+            {% if r.pode_editar %}<a href="{% url 'reserva_editar' r.pk %}" class="btn btn-sm btn-acao" title="Editar"><i class="fa-solid fa-pen"></i></a>{% endif %}
+            {% if r.pode_confirmar %}
+            <form method="post" action="{% url 'reserva_confirmar' r.pk %}" class="d-inline">{% csrf_token %}<input type="hidden" name="next" value="{{ request.get_full_path }}">
+              <button class="btn btn-sm btn-acao sucesso" title="Confirmar"><i class="fa-solid fa-check"></i></button></form>
+            {% endif %}
+            {% if r.pode_cancelar %}
+            <form method="post" action="{% url 'reserva_cancelar' r.pk %}" class="d-inline" data-confirmar="Cancelar a reserva {{ r.codigo }}?">{% csrf_token %}<input type="hidden" name="next" value="{{ request.get_full_path }}">
+              <button class="btn btn-sm btn-acao perigo" title="Cancelar"><i class="fa-solid fa-ban"></i></button></form>
+            {% endif %}
+          </td>
+        </tr>
+      {% endfor %}
+      </tbody>
+    </table>
+  </div>
+  <div class="card-body pt-0">{% include "partials/paginacao.html" %}</div>
+  {% else %}
+    {% url 'reserva_criar' as link_novo %}
+    {% include "partials/vazio.html" with icone="fa-calendar-xmark" titulo="Nenhuma reserva encontrada" texto="Altere o filtro ou registre uma nova reserva." link=link_novo link_texto="Nova reserva" %}
+  {% endif %}
+</div>
+{% endblock %}

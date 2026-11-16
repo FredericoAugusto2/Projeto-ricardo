@@ -1,0 +1,20 @@
+{# Uso: {% include "partials/campo.html" with campo=form.nome col="col-md-6" %} #}
+<div class="{{ col|default:'col-12' }}">
+  {% if campo.field.widget.input_type == 'checkbox' %}
+    <div class="form-check">
+      {{ campo }}
+      <label class="form-check-label" for="{{ campo.id_for_label }}">{{ campo.label }}</label>
+    </div>
+  {% else %}
+    <label class="form-label" for="{{ campo.id_for_label }}">
+      {{ campo.label }}{% if campo.field.required %} <span class="text-gold">*</span>{% endif %}
+    </label>
+    {% if campo.errors %}
+      <div class="is-invalid-wrapper">{{ campo }}</div>
+    {% else %}
+      {{ campo }}
+    {% endif %}
+  {% endif %}
+  {% if campo.help_text %}<div class="form-text">{{ campo.help_text }}</div>{% endif %}
+  {% for erro in campo.errors %}<div class="invalid-feedback d-block">{{ erro }}</div>{% endfor %}
+</div>

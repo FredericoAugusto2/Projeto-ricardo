@@ -1,0 +1,7 @@
+{% extends "base.html" %}
+{% block titulo %}Editar reserva {{ reserva.codigo }}{% endblock %}
+{% block cabecalho %}Reservas{% endblock %}
+{% block conteudo %}
+{% include "partials/cabecalho_pagina.html" with titulo="Editar reserva "|add:reserva.codigo subtitulo="Somente reservas pendentes ou confirmadas podem ser editadas." voltar=reserva.get_absolute_url %}
+{% include "reservas/_form.html" with voltar=reserva.get_absolute_url %}
+{% endblock %}

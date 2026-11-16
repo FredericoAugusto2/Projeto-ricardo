@@ -1,0 +1,67 @@
+{% extends "base.html" %}
+{% load hotel_extras %}
+{% block titulo %}Quartos{% endblock %}
+{% block cabecalho %}Quartos{% endblock %}
+{% block conteudo %}
+<div class="cabecalho-pagina">
+  <div><h2>Gerenciamento de Quartos</h2><p class="text-muted mb-0">Acomodações do hotel e seus status.</p></div>
+  <a href="{% url 'quarto_criar' %}" class="btn btn-gold"><i class="fa-solid fa-plus me-1"></i> Novo quarto</a>
+</div>
+
+<div class="d-flex flex-column flex-lg-row gap-3 justify-content-between mb-3">
+  <div class="filtro-abas">
+    {% for valor, rotulo in filtros_status %}
+      <a href="?status={{ valor }}{% if request.GET.tipo %}&tipo={{ request.GET.tipo }}{% endif %}" class="{% if status_atual == valor %}ativo{% endif %}">{{ rotulo }} <span>{% for k, v in contagem.items %}{% if k == valor %}{{ v }}{% endif %}{% endfor %}</span></a>
+    {% endfor %}
+  </div>
+  <form method="get" class="d-flex gap-2">
+    <input type="hidden" name="status" value="{{ status_atual }}">
+    <select name="tipo" class="form-select" onchange="this.form.submit()">
+      <option value="">Todos os tipos</option>
+      {% for valor, rotulo in tipos %}<option value="{{ valor }}" {% if request.GET.tipo == valor %}selected{% endif %}>{{ rotulo }}</option>{% endfor %}
+    </select>
+    <input type="search" name="q" value="{{ request.GET.q }}" class="form-control" placeholder="Nº do quarto">
+    <button class="btn btn-navy" type="submit" aria-label="Pesquisar"><i class="fa-solid fa-magnifying-glass"></i></button>
+  </form>
+</div>
+
+{% if quartos %}
+<div class="row g-3">
+  {% for quarto in quartos %}
+  <div class="col-sm-6 col-xl-4 col-xxl-3">
+    <div class="card card-quarto h-100">
+      <div class="card-quarto-img"><img src="{{ quarto.imagem_url }}" alt="Quarto {{ quarto.numero }}" loading="lazy">
+        {% include "partials/status_badge.html" with valor=quarto.status rotulo=quarto.get_status_display %}
+        <span class="numero">{{ quarto.numero }}</span></div>
+      <div class="card-body d-flex flex-column">
+        <div class="d-flex justify-content-between align-items-start mb-1">
+          <h3 class="h6 mb-0 fw-bold">{{ quarto.get_tipo_display }}</h3>
+          <strong class="text-navy">{{ quarto.valor_diaria|brl }}</strong>
+        </div>
+        <small class="text-muted mb-2"><i class="fa-solid fa-user-group me-1"></i> até {{ quarto.capacidade }} pessoa{{ quarto.capacidade|pluralize }}</small>
+        <p class="small text-muted flex-grow-1 mb-3">{{ quarto.descricao|truncatechars:90|default:"Sem descrição." }}</p>
+        <div class="d-flex gap-1">
+          <a href="{{ quarto.get_absolute_url }}" class="btn btn-sm btn-navy flex-grow-1"><i class="fa-solid fa-eye me-1"></i> Detalhes</a>
+          <a href="{% url 'quarto_editar' quarto.pk %}" class="btn btn-sm btn-acao" title="Editar"><i class="fa-solid fa-pen"></i></a>
+          {% if quarto.status != 'OCUPADO' %}
+          <form method="post" action="{% url 'quarto_status' quarto.pk %}">{% csrf_token %}
+            <input type="hidden" name="next" value="{{ request.get_full_path }}">
+            {% if quarto.status == 'MANUTENCAO' %}
+              <button name="status" value="DISPONIVEL" class="btn btn-sm btn-acao" title="Marcar como disponível"><i class="fa-solid fa-circle-check"></i></button>
+            {% else %}
+              <button name="status" value="MANUTENCAO" class="btn btn-sm btn-acao" title="Colocar em manutenção"><i class="fa-solid fa-screwdriver-wrench"></i></button>
+            {% endif %}
+          </form>
+          {% endif %}
+        </div>
+      </div>
+    </div>
+  </div>
+  {% endfor %}
+</div>
+<div class="mt-2">{% include "partials/paginacao.html" %}</div>
+{% else %}
+  <div class="card card-painel">{% url 'quarto_criar' as link_novo %}
+  {% include "partials/vazio.html" with icone="fa-bed" titulo="Nenhum quarto encontrado" texto="Altere o filtro ou cadastre um novo quarto." link=link_novo link_texto="Novo quarto" %}</div>
+{% endif %}
+{% endblock %}

@@ -1,0 +1,11 @@
+<form method="post" action="{% url 'contato' %}" novalidate>
+  {% csrf_token %}
+  <div class="row g-3">
+    {% include "partials/campo.html" with campo=form_contato.nome col="col-md-6" %}
+    {% include "partials/campo.html" with campo=form_contato.email col="col-md-6" %}
+    {% include "partials/campo.html" with campo=form_contato.telefone col="col-md-6" %}
+    {% include "partials/campo.html" with campo=form_contato.assunto col="col-md-6" %}
+    {% include "partials/campo.html" with campo=form_contato.mensagem col="col-12" %}
+  </div>
+  <button type="submit" class="btn btn-navy mt-3 px-4"><i class="fa-solid fa-paper-plane me-2"></i>Enviar mensagem</button>
+</form>

@@ -1,0 +1,24 @@
+<form method="post" novalidate>
+  {% csrf_token %}
+  {% include "partials/erros_form.html" %}
+  <div class="card card-painel mb-3"><div class="card-header"><h3><i class="fa-solid fa-id-card"></i> Dados pessoais</h3></div>
+    <div class="card-body"><div class="row g-3">
+      {% include "partials/campo.html" with campo=form.nome_completo col="col-md-8" %}
+      {% include "partials/campo.html" with campo=form.data_nascimento col="col-md-4" %}
+      {% include "partials/campo.html" with campo=form.cpf col="col-md-4" %}
+      {% include "partials/campo.html" with campo=form.telefone col="col-md-4" %}
+      {% include "partials/campo.html" with campo=form.email col="col-md-4" %}
+    </div></div>
+  </div>
+  <div class="card card-painel mb-3"><div class="card-header"><h3><i class="fa-solid fa-location-dot"></i> Endereço</h3></div>
+    <div class="card-body"><div class="row g-3">
+      {% include "partials/campo.html" with campo=form.endereco col="col-md-6" %}
+      {% include "partials/campo.html" with campo=form.cidade col="col-md-4" %}
+      {% include "partials/campo.html" with campo=form.estado col="col-md-2" %}
+    </div></div>
+  </div>
+  <div class="d-flex justify-content-end gap-2">
+    <a href="{{ voltar }}" class="btn btn-light border">Cancelar</a>
+    <button type="submit" class="btn btn-gold px-4"><i class="fa-solid fa-floppy-disk me-1"></i> Salvar</button>
+  </div>
+</form>

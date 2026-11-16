@@ -1,0 +1,38 @@
+{% extends "base.html" %}
+{% load hotel_extras %}
+{% block titulo %}Consultar disponibilidade{% endblock %}
+{% block cabecalho %}Reservas{% endblock %}
+{% block conteudo %}
+{% url 'reserva_lista' as voltar %}
+{% include "partials/cabecalho_pagina.html" with titulo="Consultar disponibilidade" subtitulo="Encontre quartos livres para um período." voltar=voltar %}
+<div class="card card-painel mb-4"><div class="card-body">
+  <form method="get" class="row g-3 align-items-end" novalidate>
+    {% include "partials/campo.html" with campo=form.data_checkin col="col-md-3" %}
+    {% include "partials/campo.html" with campo=form.data_checkout col="col-md-3" %}
+    {% include "partials/campo.html" with campo=form.quantidade_hospedes col="col-md-2" %}
+    {% include "partials/campo.html" with campo=form.tipo col="col-md-2" %}
+    <div class="col-md-2"><button class="btn btn-navy w-100" type="submit"><i class="fa-solid fa-magnifying-glass me-1"></i> Consultar</button></div>
+  </form>
+</div></div>
+{% if quartos is not None %}
+  {% if quartos %}
+  <p class="text-muted">{{ quartos|length }} quarto{{ quartos|length|pluralize }} disponíve{{ quartos|length|pluralize:"l,is" }} de {{ form.cleaned_data.data_checkin|date:"d/m/Y" }} a {{ form.cleaned_data.data_checkout|date:"d/m/Y" }}.</p>
+  <div class="row g-3">
+    {% for quarto in quartos %}
+    <div class="col-sm-6 col-xl-4 col-xxl-3">
+      <div class="card card-quarto h-100">
+        <div class="card-quarto-img"><img src="{{ quarto.imagem_url }}" alt="Quarto {{ quarto.numero }}" loading="lazy"><span class="numero">{{ quarto.numero }}</span></div>
+        <div class="card-body">
+          <div class="d-flex justify-content-between"><h3 class="h6 fw-bold mb-1">{{ quarto.get_tipo_display }}</h3><strong class="text-navy">{{ quarto.valor_diaria|brl }}</strong></div>
+          <small class="text-muted d-block mb-3">até {{ quarto.capacidade }} pessoas</small>
+          <a href="{% url 'reserva_criar' %}?quarto={{ quarto.pk }}&data_checkin={{ form.cleaned_data.data_checkin|date:'Y-m-d' }}&data_checkout={{ form.cleaned_data.data_checkout|date:'Y-m-d' }}&quantidade_hospedes={{ form.cleaned_data.quantidade_hospedes }}" class="btn btn-gold btn-sm w-100">Reservar este quarto</a>
+        </div>
+      </div>
+    </div>
+    {% endfor %}
+  </div>
+  {% else %}
+  <div class="card card-painel">{% include "partials/vazio.html" with icone="fa-bed" titulo="Nenhum quarto disponível" texto="Não há quartos livres para o período e a quantidade informados." %}</div>
+  {% endif %}
+{% endif %}
+{% endblock %}

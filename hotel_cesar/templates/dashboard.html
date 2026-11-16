@@ -1,0 +1,131 @@
+{% extends "base.html" %}
+{% load hotel_extras %}
+{% block titulo %}Dashboard{% endblock %}
+{% block cabecalho %}Dashboard{% endblock %}
+{% block conteudo %}
+<div class="boas-vindas">
+  <div>
+    <h2>Olá, {{ user.first_name|default:user.username }}!</h2>
+    <p class="mb-0">Resumo da operação do Hotel Cesar em {{ hoje|date:"d/m/Y" }}.</p>
+  </div>
+  <div class="d-flex gap-2 flex-wrap">
+    <a href="{% url 'checkin_lista' %}" class="btn btn-gold"><i class="fa-solid fa-right-to-bracket me-1"></i> Check-in ({{ checkins_hoje }})</a>
+    <a href="{% url 'checkout_lista' %}" class="btn btn-outline-light"><i class="fa-solid fa-right-from-bracket me-1"></i> Check-out ({{ checkouts_hoje }})</a>
+  </div>
+</div>
+
+<div class="row g-3 mb-4">
+  <div class="col-6 col-md-4 col-xl"><a href="{% url 'quarto_lista' %}" class="kpi"><div class="kpi-icone navy"><i class="fa-solid fa-hotel"></i></div><div><span>Total de quartos</span><strong>{{ q.total }}</strong></div></a></div>
+  <div class="col-6 col-md-4 col-xl"><a href="{% url 'quarto_lista' %}?status=DISPONIVEL" class="kpi"><div class="kpi-icone verde"><i class="fa-solid fa-door-open"></i></div><div><span>Disponíveis</span><strong>{{ q.disponiveis }}</strong></div></a></div>
+  <div class="col-6 col-md-4 col-xl"><a href="{% url 'quarto_lista' %}?status=OCUPADO" class="kpi"><div class="kpi-icone vermelho"><i class="fa-solid fa-door-closed"></i></div><div><span>Ocupados</span><strong>{{ q.ocupados }}</strong></div></a></div>
+  <div class="col-6 col-md-4 col-xl"><a href="{% url 'quarto_lista' %}?status=MANUTENCAO" class="kpi"><div class="kpi-icone laranja"><i class="fa-solid fa-screwdriver-wrench"></i></div><div><span>Em manutenção</span><strong>{{ q.manutencao }}</strong></div></a></div>
+  <div class="col-6 col-md-4 col-xl"><a href="{% url 'hospede_lista' %}" class="kpi"><div class="kpi-icone dourado"><i class="fa-solid fa-users"></i></div><div><span>Hóspedes cadastrados</span><strong>{{ total_hospedes }}</strong></div></a></div>
+</div>
+<div class="row g-3 mb-4">
+  <div class="col-6 col-xl-3"><a href="{% url 'reserva_lista' %}?status=CONFIRMADA" class="kpi"><div class="kpi-icone azul"><i class="fa-solid fa-calendar-check"></i></div><div><span>Reservas confirmadas</span><strong>{{ r.confirmadas }}</strong></div></a></div>
+  <div class="col-6 col-xl-3"><a href="{% url 'reserva_lista' %}?status=PENDENTE" class="kpi"><div class="kpi-icone laranja"><i class="fa-solid fa-hourglass-half"></i></div><div><span>Reservas pendentes</span><strong>{{ r.pendentes }}</strong></div></a></div>
+  <div class="col-6 col-xl-3"><a href="{% url 'checkin_lista' %}" class="kpi"><div class="kpi-icone verde"><i class="fa-solid fa-right-to-bracket"></i></div><div><span>Check-ins do dia</span><strong>{{ checkins_hoje }}</strong></div></a></div>
+  <div class="col-6 col-xl-3"><a href="{% url 'checkout_lista' %}" class="kpi"><div class="kpi-icone navy"><i class="fa-solid fa-right-from-bracket"></i></div><div><span>Check-outs do dia</span><strong>{{ checkouts_hoje }}</strong></div></a></div>
+</div>
+
+<div class="row g-4 mb-4">
+  <div class="col-xl-8">
+    <div class="card card-painel h-100">
+      <div class="card-header"><h3><i class="fa-solid fa-clock-rotate-left"></i> Reservas recentes</h3><a href="{% url 'reserva_lista' %}" class="btn btn-sm btn-light border">Ver todas</a></div>
+      <div class="table-responsive">
+        <table class="table tabela tabela-compacta mb-0">
+          <thead><tr><th>Código</th><th>Hóspede</th><th>Quarto</th><th>Período</th><th>Total</th><th>Status</th></tr></thead>
+          <tbody>
+          {% for reserva in recentes %}
+            <tr class="linha-link" data-href="{{ reserva.get_absolute_url }}">
+              <td><a href="{{ reserva.get_absolute_url }}" class="fw-semibold link-navy">{{ reserva.codigo }}</a></td>
+              <td>{{ reserva.hospede.nome_completo }}</td>
+              <td>{{ reserva.quarto.numero }}</td>
+              <td class="text-nowrap">{{ reserva.data_checkin|date:"d/m" }} – {{ reserva.data_checkout|date:"d/m" }}</td>
+              <td class="text-nowrap">{{ reserva.valor_total|brl }}</td>
+              <td>{% include "partials/status_badge.html" with valor=reserva.status rotulo=reserva.get_status_display %}</td>
+            </tr>
+          {% empty %}
+            <tr><td colspan="6">{% include "partials/vazio.html" with icone="fa-calendar-xmark" titulo="Nenhuma reserva cadastrada" texto="As reservas aparecerão aqui." %}</td></tr>
+          {% endfor %}
+          </tbody>
+        </table>
+      </div>
+    </div>
+  </div>
+  <div class="col-xl-4">
+    <div class="card card-painel h-100">
+      <div class="card-header"><h3><i class="fa-solid fa-chart-pie"></i> Ocupação dos quartos</h3></div>
+      <div class="card-body">
+        {% if q.total %}
+          <div class="grafico-wrapper"><canvas id="graficoOcupacao" aria-label="Gráfico de ocupação dos quartos"></canvas></div>
+          <p class="text-center mt-3 mb-0">Taxa de ocupação atual: <strong>{% widthratio q.ocupados q.total 100 %}%</strong></p>
+        {% else %}
+          {% include "partials/vazio.html" with icone="fa-bed" titulo="Sem quartos" texto="Cadastre quartos para ver o gráfico." %}
+        {% endif %}
+      </div>
+    </div>
+  </div>
+</div>
+
+<div class="row g-4">
+  <div class="col-lg-6 col-xl-4">
+    <div class="card card-painel h-100">
+      <div class="card-header"><h3><i class="fa-solid fa-plane-arrival"></i> Próximas chegadas</h3></div>
+      <ul class="lista-agenda">
+        {% for reserva in proximas_chegadas %}
+        <li>
+          <div class="data-bloco"><strong>{{ reserva.data_checkin|date:"d" }}</strong><span>{{ reserva.data_checkin|date:"M" }}</span></div>
+          <div class="flex-grow-1"><a href="{{ reserva.get_absolute_url }}" class="fw-semibold link-navy">{{ reserva.hospede.nome_completo }}</a><small class="d-block text-muted">Quarto {{ reserva.quarto.numero }} · {{ reserva.diarias }} diária{{ reserva.diarias|pluralize }}</small></div>
+          {% if reserva.data_checkin == hoje %}<span class="badge badge-status badge-success">Hoje</span>{% endif %}
+        </li>
+        {% empty %}<li class="text-muted justify-content-center py-4">Nenhuma chegada prevista.</li>{% endfor %}
+      </ul>
+    </div>
+  </div>
+  <div class="col-lg-6 col-xl-4">
+    <div class="card card-painel h-100">
+      <div class="card-header"><h3><i class="fa-solid fa-plane-departure"></i> Próximas saídas</h3></div>
+      <ul class="lista-agenda">
+        {% for reserva in proximas_saidas %}
+        <li>
+          <div class="data-bloco saida"><strong>{{ reserva.data_checkout|date:"d" }}</strong><span>{{ reserva.data_checkout|date:"M" }}</span></div>
+          <div class="flex-grow-1"><a href="{{ reserva.get_absolute_url }}" class="fw-semibold link-navy">{{ reserva.hospede.nome_completo }}</a><small class="d-block text-muted">Quarto {{ reserva.quarto.numero }} · {{ reserva.valor_total|brl }}</small></div>
+          {% if reserva.data_checkout <= hoje %}<span class="badge badge-status badge-danger">Hoje</span>{% endif %}
+        </li>
+        {% empty %}<li class="text-muted justify-content-center py-4">Nenhum hóspede em andamento.</li>{% endfor %}
+      </ul>
+    </div>
+  </div>
+  <div class="col-xl-4">
+    <div class="card card-painel h-100">
+      <div class="card-header"><h3><i class="fa-solid fa-sack-dollar"></i> Resumo financeiro</h3></div>
+      <div class="card-body">
+        <div class="financeiro-item"><span>Faturamento previsto</span><strong>{{ r.previsto|brl }}</strong></div>
+        <small class="text-muted d-block mb-3">Reservas pendentes, confirmadas e em andamento.</small>
+        <div class="financeiro-item"><span>Hospedagens em andamento</span><strong>{{ r.em_andamento|brl }}</strong></div>
+        <div class="financeiro-item"><span>Hospedagens finalizadas</span><strong class="text-success">{{ r.finalizado|brl }}</strong></div>
+        <div class="financeiro-item"><span>Reservas canceladas</span><strong class="text-muted">{{ r.cancelado|brl }}</strong></div>
+        <div class="alert alert-light border small mt-3 mb-0"><i class="fa-solid fa-circle-info text-gold me-1"></i>
+          Valores calculados a partir das reservas. O sistema não registra pagamentos; estes números <strong>não representam valores efetivamente recebidos</strong>.</div>
+      </div>
+    </div>
+  </div>
+</div>
+{{ grafico_ocupacao|json_script:"dados-ocupacao" }}
+{% endblock %}
+{% block scripts %}
+<script src="https://cdn.jsdelivr.net/npm/chart.js@4.4.3/dist/chart.umd.min.js"></script>
+<script>
+  (function () {
+    const el = document.getElementById("graficoOcupacao");
+    if (!el || !window.Chart) return;
+    const dados = JSON.parse(JSON.parse(document.getElementById("dados-ocupacao").textContent));
+    new Chart(el, {
+      type: "doughnut",
+      data: { labels: dados.labels, datasets: [{ data: dados.valores, backgroundColor: ["#1e7e4a", "#b42318", "#c58a1b"], borderWidth: 2, borderColor: "#fff" }] },
+      options: { cutout: "68%", plugins: { legend: { position: "bottom", labels: { usePointStyle: true, padding: 16 } } }, maintainAspectRatio: false }
+    });
+  })();
+</script>
+{% endblock %}

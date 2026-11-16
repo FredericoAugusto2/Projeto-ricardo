@@ -1,0 +1,95 @@
+{% extends "base.html" %}
+{% load hotel_extras %}
+{% block titulo %}Relatórios{% endblock %}
+{% block cabecalho %}Relatórios{% endblock %}
+{% block conteudo %}
+<div class="cabecalho-pagina">
+  <div><h2>Relatórios</h2><p class="text-muted mb-0">Período: {{ inicio|date:"d/m/Y" }} a {{ fim|date:"d/m/Y" }} ({{ dias_periodo }} dias)</p></div>
+  <a href="?inicio={{ inicio|date:'Y-m-d' }}&fim={{ fim|date:'Y-m-d' }}&exportar=csv" class="btn btn-outline-navy"><i class="fa-solid fa-file-csv me-1"></i> Exportar CSV</a>
+</div>
+<div class="card card-painel mb-4"><div class="card-body">
+  <form method="get" class="row g-3 align-items-end" novalidate>
+    {% include "partials/campo.html" with campo=form.inicio col="col-md-4" %}
+    {% include "partials/campo.html" with campo=form.fim col="col-md-4" %}
+    <div class="col-md-4 d-flex gap-2"><button class="btn btn-navy flex-grow-1"><i class="fa-solid fa-filter me-1"></i> Aplicar filtro</button>
+      <a href="{% url 'relatorios' %}" class="btn btn-light border">Mês atual</a></div>
+  </form>
+  <p class="small text-muted mt-2 mb-0">São consideradas as reservas cuja estadia se sobrepõe ao período escolhido.</p>
+</div></div>
+
+<div class="row g-3 mb-4">
+  <div class="col-6 col-xl-3"><div class="kpi"><div class="kpi-icone navy"><i class="fa-solid fa-calendar-days"></i></div><div><span>Total de reservas</span><strong>{{ total_reservas }}</strong></div></div></div>
+  <div class="col-6 col-xl-3"><div class="kpi"><div class="kpi-icone dourado"><i class="fa-solid fa-percent"></i></div><div><span>Taxa de ocupação</span><strong>{{ taxa_ocupacao }}%</strong><small class="text-muted">{{ noites_ocupadas }} de {{ capacidade_noites }} noites</small></div></div></div>
+  <div class="col-6 col-xl-3"><div class="kpi"><div class="kpi-icone verde"><i class="fa-solid fa-users"></i></div><div><span>Hóspedes no período</span><strong>{{ hospedes_periodo }}</strong><small class="text-muted">{{ pessoas_periodo }} pessoas · {{ total_hospedes }} cadastrados</small></div></div></div>
+  <div class="col-6 col-xl-3"><div class="kpi"><div class="kpi-icone azul"><i class="fa-solid fa-bed"></i></div><div><span>Quartos mais utilizados</span><strong>{% if quartos_mais_usados %}{{ quartos_mais_usados.0.quarto.numero }}{% else %}—{% endif %}</strong><small class="text-muted">líder no período</small></div></div></div>
+</div>
+
+<div class="row g-4 mb-4">
+  <div class="col-lg-6">
+    <div class="card card-painel h-100"><div class="card-header"><h3><i class="fa-solid fa-sack-dollar"></i> Faturamento</h3></div>
+      <div class="card-body">
+        <div class="row g-3">
+          <div class="col-sm-6"><div class="fat-box previsto"><span>Faturamento previsto</span><strong>{{ faturamento_previsto|brl }}</strong><small>Pendentes, confirmadas e em andamento</small></div></div>
+          <div class="col-sm-6"><div class="fat-box finalizado"><span>Hospedagens finalizadas</span><strong>{{ faturamento_finalizado|brl }}</strong><small>Estadias concluídas (check-out)</small></div></div>
+        </div>
+        <div class="alert alert-light border small mt-3 mb-0"><i class="fa-solid fa-circle-info text-gold me-1"></i>
+          <strong>Atenção:</strong> faturamento previsto e valores efetivamente recebidos são informações diferentes. Este sistema não possui controle de pagamentos; os valores acima são calculados a partir das reservas.</div>
+      </div>
+    </div>
+  </div>
+  <div class="col-lg-6">
+    <div class="card card-painel h-100"><div class="card-header"><h3><i class="fa-solid fa-chart-column"></i> Reservas por status</h3></div>
+      <div class="card-body">{% if total_reservas %}<div class="grafico-wrapper"><canvas id="graficoStatus"></canvas></div>{% else %}{% include "partials/vazio.html" with icone="fa-chart-column" titulo="Sem dados" texto="Nenhuma reserva no período." %}{% endif %}</div>
+    </div>
+  </div>
+</div>
+
+<div class="row g-4 mb-4">
+  <div class="col-lg-6">
+    <div class="card card-painel h-100"><div class="card-header"><h3><i class="fa-solid fa-trophy"></i> Quartos mais utilizados</h3></div>
+      {% if quartos_mais_usados %}
+      <div class="table-responsive"><table class="table tabela mb-0"><thead><tr><th>Quarto</th><th>Tipo</th><th>Reservas</th><th>Noites</th><th>Valor</th></tr></thead>
+        <tbody>{% for i in quartos_mais_usados %}<tr><td class="fw-semibold">{{ i.quarto.numero }}</td><td>{{ i.quarto.get_tipo_display }}</td><td>{{ i.reservas }}</td><td>{{ i.noites }}</td><td class="text-nowrap">{{ i.valor|brl }}</td></tr>{% endfor %}</tbody></table></div>
+      {% else %}<p class="text-muted text-center py-4 mb-0">Sem ocupação no período.</p>{% endif %}
+    </div>
+  </div>
+  <div class="col-lg-6">
+    <div class="card card-painel h-100"><div class="card-header"><h3><i class="fa-solid fa-calendar"></i> Reservas por período (mês de entrada)</h3></div>
+      {% if por_mes %}
+      <div class="table-responsive"><table class="table tabela mb-0"><thead><tr><th>Mês</th><th>Reservas</th><th>Valor total</th></tr></thead>
+        <tbody>{% for m in por_mes %}<tr><td>{{ m.mes }}</td><td>{{ m.total }}</td><td>{{ m.valor|brl }}</td></tr>{% endfor %}</tbody></table></div>
+      {% else %}<p class="text-muted text-center py-4 mb-0">Sem reservas no período.</p>{% endif %}
+      <div class="card-body border-top"><div class="d-flex flex-wrap gap-2">{% for rotulo, valor, n in por_status %}<span class="badge badge-status badge-{{ valor|status_cor }}">{{ rotulo }}: {{ n }}</span>{% endfor %}</div></div>
+    </div>
+  </div>
+</div>
+
+<div class="card card-painel">
+  <div class="card-header"><h3><i class="fa-solid fa-list"></i> Reservas do período</h3><small class="text-muted">até 50 registros · use o CSV para a lista completa</small></div>
+  {% if reservas %}
+  <div class="table-responsive"><table class="table tabela mb-0 align-middle">
+    <thead><tr><th>Código</th><th>Hóspede</th><th>Quarto</th><th>Entrada</th><th>Saída</th><th>Diárias</th><th>Total</th><th>Status</th></tr></thead>
+    <tbody>{% for r in reservas %}<tr>
+      <td><a href="{{ r.get_absolute_url }}" class="link-navy fw-semibold">{{ r.codigo }}</a></td><td>{{ r.hospede }}</td><td>{{ r.quarto.numero }}</td>
+      <td>{{ r.data_checkin|date:"d/m/Y" }}</td><td>{{ r.data_checkout|date:"d/m/Y" }}</td><td>{{ r.diarias }}</td><td class="text-nowrap">{{ r.valor_total|brl }}</td>
+      <td>{% include "partials/status_badge.html" with valor=r.status rotulo=r.get_status_display %}</td></tr>{% endfor %}</tbody>
+  </table></div>
+  {% else %}{% include "partials/vazio.html" with icone="fa-calendar-xmark" titulo="Nenhuma reserva no período" texto="Altere as datas do filtro." %}{% endif %}
+</div>
+{{ grafico_status|json_script:"dados-status" }}
+{% endblock %}
+{% block scripts %}
+<script src="https://cdn.jsdelivr.net/npm/chart.js@4.4.3/dist/chart.umd.min.js"></script>
+<script>
+  (function () {
+    const el = document.getElementById("graficoStatus");
+    if (!el || !window.Chart) return;
+    const dados = JSON.parse(JSON.parse(document.getElementById("dados-status").textContent));
+    new Chart(el, {
+      type: "bar",
+      data: { labels: dados.labels, datasets: [{ label: "Reservas", data: dados.valores, backgroundColor: ["#c58a1b", "#13294b", "#2b7bb9", "#1e7e4a", "#8a8f98"], borderRadius: 6 }] },
+      options: { maintainAspectRatio: false, plugins: { legend: { display: false } }, scales: { y: { beginAtZero: true, ticks: { precision: 0 } } } }
+    });
+  })();
+</script>
+{% endblock %}

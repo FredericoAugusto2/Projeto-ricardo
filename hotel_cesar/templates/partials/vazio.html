@@ -1,0 +1,6 @@
+<div class="estado-vazio">
+  <div class="estado-vazio-icone"><i class="fa-solid {{ icone|default:'fa-folder-open' }}"></i></div>
+  <h5>{{ titulo|default:"Nenhum registro encontrado" }}</h5>
+  <p class="text-muted mb-3">{{ texto|default:"Ajuste os filtros ou cadastre um novo registro." }}</p>
+  {% if link %}<a href="{{ link }}" class="btn btn-gold"><i class="fa-solid fa-plus me-1"></i>{{ link_texto }}</a>{% endif %}
+</div>

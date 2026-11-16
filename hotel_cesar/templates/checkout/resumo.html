@@ -1,0 +1,32 @@
+{% extends "base.html" %}
+{% load hotel_extras %}
+{% block titulo %}Resumo da hospedagem{% endblock %}
+{% block cabecalho %}Check-out{% endblock %}
+{% block conteudo %}
+<div class="card card-painel mx-auto" style="max-width:760px">
+  <div class="card-body p-4 p-md-5">
+    <div class="text-center mb-4">
+      <div class="icone-sucesso"><i class="fa-solid fa-check"></i></div>
+      <h2 class="titulo-serif">Hospedagem finalizada</h2>
+      <p class="text-muted mb-0">Reserva {{ reserva.codigo }} · Quarto {{ reserva.quarto.numero }} liberado</p>
+    </div>
+    <div class="resumo-box mb-4">
+      <div><span>Hóspede</span><strong>{{ reserva.hospede.nome_completo }}</strong></div>
+      <div><span>CPF</span><strong>{{ reserva.hospede.cpf|cpf }}</strong></div>
+      <div><span>Quarto</span><strong>{{ reserva.quarto.numero }} – {{ reserva.quarto.get_tipo_display }}</strong></div>
+      <div><span>Hóspedes</span><strong>{{ reserva.quantidade_hospedes }}</strong></div>
+      <div><span>Check-in</span><strong>{{ reserva.checkin_realizado_em|date:"d/m/Y H:i" }}</strong></div>
+      <div><span>Check-out</span><strong>{{ reserva.checkout_realizado_em|date:"d/m/Y H:i" }}</strong></div>
+      <div><span>Período reservado</span><strong>{{ reserva.data_checkin|date:"d/m/Y" }} – {{ reserva.data_checkout|date:"d/m/Y" }}</strong></div>
+      <div><span>Diárias</span><strong>{{ reserva.diarias }} × {{ reserva.valor_diaria|brl }}</strong></div>
+    </div>
+    <div class="resumo-total grande"><span>Valor da hospedagem</span><strong>{{ reserva.valor_total|brl }}</strong></div>
+    <p class="small text-muted mt-2">Valor calculado com base nas diárias reservadas. O sistema não registra pagamentos.</p>
+    <div class="d-flex flex-wrap gap-2 justify-content-center mt-4 d-print-none">
+      <button type="button" class="btn btn-light border" onclick="window.print()"><i class="fa-solid fa-print me-1"></i> Imprimir</button>
+      <a href="{% url 'checkout_lista' %}" class="btn btn-navy"><i class="fa-solid fa-arrow-left me-1"></i> Voltar ao check-out</a>
+      <a href="{{ reserva.get_absolute_url }}" class="btn btn-outline-navy">Ver reserva</a>
+    </div>
+  </div>
+</div>
+{% endblock %}

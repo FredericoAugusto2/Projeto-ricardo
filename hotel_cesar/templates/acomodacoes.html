@@ -1,0 +1,33 @@
+{% extends "base_site.html" %}
+{% load static %}
+{% block titulo %}Acomodações{% endblock %}
+{% block conteudo %}
+<section class="page-hero" style="--hero-img: url('{% static 'images/quarto_luxo.jpg' %}')">
+  <div class="hero-overlay"></div>
+  <div class="container position-relative"><span class="eyebrow">Acomodações</span><h1>Quartos para cada tipo de viagem</h1></div>
+</section>
+<section class="secao">
+  <div class="container">
+    {% for a in acomodacoes %}
+    <div class="row align-items-center g-4 g-lg-5 acomodacao-linha {% cycle '' 'flex-lg-row-reverse' %}">
+      <div class="col-lg-6"><img src="{{ a.imagem_url }}" alt="{{ a.nome }}" class="img-fluid rounded-4 shadow-sm" loading="lazy"></div>
+      <div class="col-lg-6">
+        <span class="eyebrow-escuro">{{ a.total }} quarto{{ a.total|pluralize }} disponíveis nesta categoria</span>
+        <h2 class="titulo-secao">{{ a.nome }}</h2>
+        <p class="text-muted">{{ a.descricao }}</p>
+        <ul class="lista-check">
+          <li>Capacidade para até {{ a.capacidade }} pessoa{{ a.capacidade|pluralize }}</li>
+          <li>Wi-Fi, ar-condicionado e TV</li>
+          <li>Café da manhã incluso</li>
+        </ul>
+        {% load hotel_extras %}
+        <p class="preco-grande">a partir de <strong>{{ a.valor_minimo|brl }}</strong> / noite</p>
+        <a href="{% url 'reservar' %}?tipo={{ a.tipo }}" class="btn btn-gold px-4">Solicitar reserva</a>
+      </div>
+    </div>
+    {% empty %}
+      {% include "partials/vazio.html" with icone="fa-bed" titulo="Nenhuma acomodação cadastrada" texto="Cadastre quartos no sistema administrativo." %}
+    {% endfor %}
+  </div>
+</section>
+{% endblock %}

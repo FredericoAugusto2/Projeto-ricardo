@@ -1,0 +1,31 @@
+{% extends "base_site.html" %}
+{% load static %}
+{% block titulo %}Contato{% endblock %}
+{% block conteudo %}
+<section class="page-hero" style="--hero-img: url('{% static 'images/hero.jpg' %}')">
+  <div class="hero-overlay"></div>
+  <div class="container position-relative"><span class="eyebrow">Contato</span><h1>Estamos à sua disposição</h1></div>
+</section>
+<section class="secao">
+  <div class="container">
+    <div class="row g-5">
+      <div class="col-lg-5">
+        <ul class="list-unstyled contato-detalhes">
+          <li><i class="fa-solid fa-phone"></i><div><strong>Telefone</strong><span>{{ HOTEL.telefone }}</span></div></li>
+          <li><i class="fa-brands fa-whatsapp"></i><div><strong>WhatsApp</strong><span>{{ HOTEL.whatsapp }}</span></div></li>
+          <li><i class="fa-solid fa-envelope"></i><div><strong>E-mail</strong><span>{{ HOTEL.email }}</span></div></li>
+          <li><i class="fa-solid fa-location-dot"></i><div><strong>Endereço</strong><span>{{ HOTEL.endereco }}</span></div></li>
+          <li><i class="fa-solid fa-clock"></i><div><strong>Horário de atendimento</strong><span>{{ HOTEL.horario }}</span></div></li>
+        </ul>
+        <span class="badge bg-gold-soft text-wrap">{{ HOTEL.aviso }}</span>
+      </div>
+      <div class="col-lg-7">
+        <div class="card card-form"><div class="card-body p-4">
+          <h2 class="h4 titulo-serif mb-3">Envie uma mensagem</h2>
+          {% include "partials/form_contato.html" %}
+        </div></div>
+      </div>
+    </div>
+  </div>
+</section>
+{% endblock %}

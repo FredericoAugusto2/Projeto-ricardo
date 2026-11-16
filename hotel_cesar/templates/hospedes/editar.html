@@ -1,0 +1,7 @@
+{% extends "base.html" %}
+{% block titulo %}Editar hóspede{% endblock %}
+{% block cabecalho %}Hóspedes{% endblock %}
+{% block conteudo %}
+{% include "partials/cabecalho_pagina.html" with titulo="Editar hóspede" subtitulo=hospede.nome_completo voltar=hospede.get_absolute_url %}
+{% include "hospedes/_form.html" with voltar=hospede.get_absolute_url %}
+{% endblock %}

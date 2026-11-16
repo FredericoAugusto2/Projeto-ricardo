@@ -1,0 +1,55 @@
+{% extends "base.html" %}
+{% load hotel_extras %}
+{% block titulo %}Check-in{% endblock %}
+{% block cabecalho %}Check-in{% endblock %}
+{% block conteudo %}
+<div class="cabecalho-pagina">
+  <div><h2>Check-in</h2><p class="text-muted mb-0">Chegadas previstas para {{ hoje|date:"d/m/Y" }}.</p></div>
+</div>
+<div class="card card-painel mb-4"><div class="card-body">
+  <form method="get" class="row g-2 align-items-end">
+    <div class="col-md-9"><label class="form-label small">Pesquisar reserva</label>
+      <div class="input-group"><span class="input-group-text"><i class="fa-solid fa-magnifying-glass"></i></span>
+      <input type="search" name="q" value="{{ busca }}" class="form-control" placeholder="Código (ex.: RC00012), nome ou CPF do hóspede"></div></div>
+    <div class="col-md-3 d-flex gap-2"><button class="btn btn-navy flex-grow-1">Buscar</button>{% if busca %}<a href="{% url 'checkin_lista' %}" class="btn btn-light border"><i class="fa-solid fa-xmark"></i></a>{% endif %}</div>
+  </form>
+</div></div>
+
+{% if busca %}
+<div class="card card-painel mb-4">
+  <div class="card-header"><h3><i class="fa-solid fa-list-check"></i> Resultados para “{{ busca }}”</h3></div>
+  {% include "checkin/_tabela.html" with reservas=resultados vazio="Nenhuma reserva encontrada." %}
+</div>
+{% endif %}
+
+<div class="card card-painel mb-4">
+  <div class="card-header"><h3><i class="fa-solid fa-plane-arrival"></i> Chegadas de hoje</h3><span class="badge badge-status badge-primary">{{ chegadas_hoje|length }}</span></div>
+  {% include "checkin/_tabela.html" with reservas=chegadas_hoje vazio="Nenhuma chegada confirmada para hoje." %}
+</div>
+
+{% if atrasadas %}
+<div class="card card-painel mb-4 borda-aviso">
+  <div class="card-header"><h3><i class="fa-solid fa-triangle-exclamation text-warning"></i> Chegadas atrasadas</h3></div>
+  {% include "checkin/_tabela.html" with reservas=atrasadas %}
+</div>
+{% endif %}
+
+<div class="row g-4">
+  <div class="col-lg-6">
+    <div class="card card-painel h-100"><div class="card-header"><h3><i class="fa-solid fa-calendar-week"></i> Próximas chegadas</h3></div>
+      <ul class="lista-agenda">{% for r in proximas %}
+        <li><div class="data-bloco"><strong>{{ r.data_checkin|date:"d" }}</strong><span>{{ r.data_checkin|date:"M" }}</span></div>
+          <div class="flex-grow-1"><a href="{{ r.get_absolute_url }}" class="fw-semibold link-navy">{{ r.codigo }} · {{ r.hospede }}</a><small class="d-block text-muted">Quarto {{ r.quarto.numero }}</small></div></li>
+      {% empty %}<li class="text-muted justify-content-center py-4">Nenhuma chegada futura confirmada.</li>{% endfor %}</ul>
+    </div>
+  </div>
+  <div class="col-lg-6">
+    <div class="card card-painel h-100"><div class="card-header"><h3><i class="fa-solid fa-circle-check"></i> Check-ins realizados hoje</h3></div>
+      <ul class="lista-agenda">{% for r in realizados_hoje %}
+        <li><div class="data-bloco ok"><i class="fa-solid fa-check"></i></div>
+          <div class="flex-grow-1"><a href="{{ r.get_absolute_url }}" class="fw-semibold link-navy">{{ r.hospede }}</a><small class="d-block text-muted">Quarto {{ r.quarto.numero }} · {{ r.checkin_realizado_em|date:"H:i" }}</small></div></li>
+      {% empty %}<li class="text-muted justify-content-center py-4">Nenhum check-in realizado hoje.</li>{% endfor %}</ul>
+    </div>
+  </div>
+</div>
+{% endblock %}

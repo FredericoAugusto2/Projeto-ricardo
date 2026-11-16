@@ -1,0 +1,49 @@
+{% extends "base_site.html" %}
+{% load static %}
+{% block titulo %}Sobre o hotel{% endblock %}
+{% block conteudo %}
+<section class="page-hero" style="--hero-img: url('{% static 'images/sobre.jpg' %}')">
+  <div class="hero-overlay"></div>
+  <div class="container position-relative"><span class="eyebrow">Sobre o hotel</span><h1>Hospitalidade com padrão executivo</h1></div>
+</section>
+<section class="secao">
+  <div class="container">
+    <div class="row g-5 align-items-center">
+      <div class="col-lg-7">
+        <h2 class="titulo-secao">Nossa proposta</h2>
+        <p class="text-muted">O Hotel Cesar nasceu para oferecer uma experiência de hospedagem tranquila, organizada e acolhedora. Nossas {{ total_quartos }} acomodações foram planejadas para atender desde o viajante a negócios até famílias em férias.</p>
+        <p class="text-muted">Investimos em atendimento humano, processos ágeis de reserva, check-in e check-out e em ambientes que transmitem conforto e confiança.</p>
+        <div class="row g-3 mt-3">
+          <div class="col-6 col-md-3"><div class="numero-destaque"><strong>{{ total_quartos }}</strong><span>acomodações</span></div></div>
+          <div class="col-6 col-md-3"><div class="numero-destaque"><strong>4</strong><span>categorias</span></div></div>
+          <div class="col-6 col-md-3"><div class="numero-destaque"><strong>24h</strong><span>recepção</span></div></div>
+          <div class="col-6 col-md-3"><div class="numero-destaque"><strong>100%</strong><span>dedicação</span></div></div>
+        </div>
+      </div>
+      <div class="col-lg-5">
+        <div class="card card-form"><div class="card-body p-4">
+          <h5 class="titulo-serif mb-3">Nossos valores</h5>
+          <ul class="lista-check">
+            <li>Conforto em cada detalhe</li>
+            <li>Qualidade no atendimento</li>
+            <li>Ambiente agradável e seguro</li>
+            <li>Hospedagem organizada</li>
+            <li>Experiência memorável para os hóspedes</li>
+          </ul>
+        </div></div>
+      </div>
+    </div>
+  </div>
+</section>
+<section class="secao secao-navy">
+  <div class="container">
+    <h2 class="titulo-secao text-claro text-center mb-5">Comodidades</h2>
+    <div class="row g-4">
+      {% for icone, titulo, texto in servicos %}
+      <div class="col-sm-6 col-lg-4"><div class="servico"><div class="servico-icone"><i class="fa-solid {{ icone }}"></i></div><h5>{{ titulo }}</h5><p>{{ texto }}</p></div></div>
+      {% endfor %}
+    </div>
+    <div class="text-center mt-5"><a href="{% url 'reservar' %}" class="btn btn-gold btn-lg px-4">FAZER UMA RESERVA</a></div>
+  </div>
+</section>
+{% endblock %}

@@ -1,0 +1,39 @@
+{% extends "base.html" %}
+{% load hotel_extras %}
+{% block titulo %}Check-out{% endblock %}
+{% block cabecalho %}Check-out{% endblock %}
+{% block conteudo %}
+<div class="cabecalho-pagina">
+  <div><h2>Check-out</h2><p class="text-muted mb-0">Hóspedes atualmente hospedados.</p></div>
+</div>
+<div class="card card-painel mb-4">
+  <div class="card-header"><h3><i class="fa-solid fa-hotel"></i> Hospedados agora</h3><span class="badge badge-status badge-info">{{ hospedados|length }}</span></div>
+  {% if hospedados %}
+  <div class="table-responsive"><table class="table tabela mb-0 align-middle">
+    <thead><tr><th>Código</th><th>Hóspede</th><th>Quarto</th><th>Entrada</th><th>Saída prevista</th><th>Valor da hospedagem</th><th class="text-end">Ação</th></tr></thead>
+    <tbody>{% for r in hospedados %}
+    <tr>
+      <td><a href="{{ r.get_absolute_url }}" class="fw-semibold link-navy">{{ r.codigo }}</a></td>
+      <td>{{ r.hospede.nome_completo }}</td>
+      <td>{{ r.quarto.numero }} <small class="text-muted">{{ r.quarto.get_tipo_display }}</small></td>
+      <td class="text-nowrap">{{ r.checkin_realizado_em|date:"d/m/Y H:i" }}</td>
+      <td class="text-nowrap">{{ r.data_checkout|date:"d/m/Y" }} {% if r.data_checkout < hoje %}<span class="badge badge-status badge-danger">Atrasado</span>{% elif r.data_checkout == hoje %}<span class="badge badge-status badge-warning">Hoje</span>{% endif %}</td>
+      <td class="text-nowrap fw-semibold">{{ r.valor_total|brl }}</td>
+      <td class="text-end">
+        <form method="post" action="{% url 'checkout_realizar' r.pk %}" data-confirmar="Realizar o check-out de {{ r.hospede.nome_completo }} e liberar o quarto {{ r.quarto.numero }}?">{% csrf_token %}
+          <button class="btn btn-sm btn-gold text-nowrap"><i class="fa-solid fa-right-from-bracket me-1"></i> Realizar check-out</button></form>
+      </td>
+    </tr>{% endfor %}</tbody>
+  </table></div>
+  {% else %}
+    {% include "partials/vazio.html" with icone="fa-door-open" titulo="Nenhum hóspede hospedado" texto="Os hóspedes aparecem aqui após o check-in." %}
+  {% endif %}
+</div>
+<div class="card card-painel">
+  <div class="card-header"><h3><i class="fa-solid fa-circle-check"></i> Check-outs realizados hoje</h3></div>
+  <ul class="lista-agenda">{% for r in realizados_hoje %}
+    <li><div class="data-bloco ok"><i class="fa-solid fa-check"></i></div>
+      <div class="flex-grow-1"><a href="{% url 'checkout_resumo' r.pk %}" class="fw-semibold link-navy">{{ r.hospede }}</a><small class="d-block text-muted">Quarto {{ r.quarto.numero }} · {{ r.checkout_realizado_em|date:"H:i" }} · {{ r.valor_total|brl }}</small></div></li>
+  {% empty %}<li class="text-muted justify-content-center py-4">Nenhum check-out realizado hoje.</li>{% endfor %}</ul>
+</div>
+{% endblock %}

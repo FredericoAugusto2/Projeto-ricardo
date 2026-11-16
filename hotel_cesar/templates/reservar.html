@@ -1,0 +1,17 @@
+{% extends "base_site.html" %}
+{% load static %}
+{% block titulo %}Fazer reserva{% endblock %}
+{% block conteudo %}
+<section class="page-hero" style="--hero-img: url('{% static 'images/quarto_executivo.jpg' %}')">
+  <div class="hero-overlay"></div>
+  <div class="container position-relative"><span class="eyebrow">Reservas</span><h1>Solicite sua reserva</h1></div>
+</section>
+<section class="secao">
+  <div class="container">
+    <div class="card card-reserva"><div class="card-body p-4 p-lg-5">
+      <p class="text-muted">Verificamos automaticamente se há um quarto do tipo escolhido livre no período. Se houver, sua solicitação é registrada como <strong>pendente</strong> e nossa equipe entrará em contato para confirmar.</p>
+      {% include "partials/form_reserva_publica.html" %}
+    </div></div>
+  </div>
+</section>
+{% endblock %}

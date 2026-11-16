@@ -1,0 +1,106 @@
+/* ==========================================================
+   HOTEL CESAR – Identidade visual (tokens compartilhados)
+   ========================================================== */
+:root {
+  --navy-900: #0b1626;
+  --navy-800: #0f1e33;
+  --navy-700: #13294b;
+  --navy-600: #1c3a66;
+  --gold-500: #c6a15b;
+  --gold-600: #b08a43;
+  --gold-100: #f5ecd9;
+  --cinza-50: #f6f7f9;
+  --cinza-100: #eef0f4;
+  --cinza-200: #e2e6ec;
+  --cinza-500: #6b7280;
+  --texto: #1d2533;
+  --branco: #ffffff;
+  --sucesso: #1e7e4a;
+  --perigo: #b42318;
+  --aviso: #c58a1b;
+  --info: #2b7bb9;
+  --raio: 14px;
+  --sombra-sm: 0 1px 2px rgba(15, 30, 51, .06), 0 1px 3px rgba(15, 30, 51, .08);
+  --sombra-md: 0 10px 30px -12px rgba(15, 30, 51, .25);
+  --fonte-titulo: "Playfair Display", Georgia, serif;
+  --fonte-texto: "Manrope", "Segoe UI", system-ui, sans-serif;
+  --bs-body-font-family: var(--fonte-texto);
+  --bs-body-color: var(--texto);
+  --bs-link-color: var(--navy-700);
+  --bs-link-hover-color: var(--gold-600);
+  --bs-border-radius: 10px;
+}
+
+body { font-family: var(--fonte-texto); color: var(--texto); -webkit-font-smoothing: antialiased; }
+.titulo-serif { font-family: var(--fonte-titulo); font-weight: 700; color: var(--navy-800); }
+.text-gold { color: var(--gold-500) !important; }
+.text-navy { color: var(--navy-700) !important; }
+.link-navy { color: var(--navy-700); text-decoration: none; }
+.link-navy:hover { color: var(--gold-600); }
+.link-gold { color: var(--gold-600); text-decoration: none; font-weight: 600; }
+.link-gold:hover { color: var(--navy-700); }
+.letra-espacada { letter-spacing: .12em; }
+.bg-gold-soft { background: var(--gold-100); color: var(--gold-600); font-weight: 600; }
+
+/* Logo */
+.logo { display: inline-flex; align-items: center; gap: .6rem; text-decoration: none; color: var(--navy-800); }
+.logo-marca {
+  width: 40px; height: 40px; border-radius: 10px; display: grid; place-items: center;
+  font-family: var(--fonte-titulo); font-weight: 700; font-size: 1.6rem;
+  color: var(--navy-900); background: linear-gradient(135deg, #e3c88f, var(--gold-500) 55%, var(--gold-600));
+  box-shadow: inset 0 0 0 1px rgba(255,255,255,.35);
+}
+.logo-texto { font-size: .95rem; letter-spacing: .28em; font-weight: 500; }
+.logo-texto strong { font-weight: 800; }
+.logo-claro, .logo-claro:hover { color: var(--branco); }
+
+/* Botões padronizados */
+.btn { font-weight: 600; border-radius: 10px; display: inline-flex; align-items: center; justify-content: center; }
+.btn-lg { padding: .8rem 1.4rem; font-size: 1rem; }
+.btn-gold { background: var(--gold-500); border-color: var(--gold-500); color: var(--navy-900); }
+.btn-gold:hover, .btn-gold:focus { background: var(--gold-600); border-color: var(--gold-600); color: var(--navy-900); }
+.btn-navy { background: var(--navy-700); border-color: var(--navy-700); color: var(--branco); }
+.btn-navy:hover, .btn-navy:focus { background: var(--navy-800); border-color: var(--navy-800); color: var(--branco); }
+.btn-outline-navy { border: 1.5px solid var(--navy-700); color: var(--navy-700); background: transparent; }
+.btn-outline-navy:hover { background: var(--navy-700); color: var(--branco); }
+.btn-outline-gold { border: 1.5px solid var(--gold-500); color: var(--gold-500); background: transparent; }
+.btn-outline-gold:hover { background: var(--gold-500); color: var(--navy-900); }
+
+/* Formulários */
+.form-control, .form-select { border-color: var(--cinza-200); padding: .6rem .85rem; border-radius: 10px; }
+.form-control:focus, .form-select:focus { border-color: var(--gold-500); box-shadow: 0 0 0 .2rem rgba(198, 161, 91, .2); }
+.form-label { font-weight: 600; font-size: .875rem; color: var(--navy-800); margin-bottom: .35rem; }
+.is-invalid-wrapper .form-control, .is-invalid-wrapper .form-select { border-color: var(--perigo); }
+.input-group-text { background: var(--cinza-50); border-color: var(--cinza-200); color: var(--cinza-500); }
+
+/* Badges de status */
+.badge-status { font-weight: 600; font-size: .75rem; padding: .4em .75em; border-radius: 999px; letter-spacing: .01em; vertical-align: middle; }
+.badge-success { background: #e3f4ea; color: var(--sucesso); }
+.badge-danger { background: #fde8e6; color: var(--perigo); }
+.badge-warning { background: #fdf2dc; color: #9a6a0f; }
+.badge-primary { background: #e3eaf6; color: var(--navy-700); }
+.badge-info { background: #e2f0fa; color: #1d6496; }
+.badge-secondary { background: var(--cinza-100); color: var(--cinza-500); }
+
+/* Alertas */
+.alert { border-radius: 12px; border: 0; }
+.alert-success { background: #e3f4ea; color: #15603a; }
+.alert-danger { background: #fde8e6; color: #8f1c13; }
+.alert-warning { background: #fdf2dc; color: #7a530b; }
+.alert-info { background: #e5eef9; color: var(--navy-700); }
+
+/* Estado vazio */
+.estado-vazio { text-align: center; padding: 3rem 1rem; }
+.estado-vazio-icone { width: 72px; height: 72px; border-radius: 50%; margin: 0 auto 1rem; display: grid; place-items: center; background: var(--gold-100); color: var(--gold-600); font-size: 1.75rem; }
+.estado-vazio h5 { font-weight: 700; color: var(--navy-800); }
+
+.icone-sucesso, .icone-alerta { width: 76px; height: 76px; border-radius: 50%; margin: 0 auto 1.25rem; display: grid; place-items: center; font-size: 2rem; }
+.icone-sucesso { background: #e3f4ea; color: var(--sucesso); }
+.icone-alerta.perigo { background: #fde8e6; color: var(--perigo); }
+.icone-alerta.aviso { background: var(--gold-100); color: var(--gold-600); }
+
+.resumo-box { background: var(--cinza-50); border: 1px solid var(--cinza-200); border-radius: 12px; padding: 1rem 1.25rem; display: grid; grid-template-columns: repeat(auto-fit, minmax(200px, 1fr)); gap: .9rem 1.5rem; }
+.resumo-box span { display: block; font-size: .78rem; color: var(--cinza-500); text-transform: uppercase; letter-spacing: .06em; }
+.resumo-box strong { color: var(--navy-800); }
+
+@media print { .sidebar, .topbar, .rodape-painel, .d-print-none { display: none !important; } .conteudo-principal { margin: 0 !important; } }

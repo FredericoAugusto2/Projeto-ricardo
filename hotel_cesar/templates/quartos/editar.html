@@ -1,0 +1,7 @@
+{% extends "base.html" %}
+{% block titulo %}Editar quarto {{ quarto.numero }}{% endblock %}
+{% block cabecalho %}Quartos{% endblock %}
+{% block conteudo %}
+{% include "partials/cabecalho_pagina.html" with titulo="Editar quarto" subtitulo=quarto voltar=quarto.get_absolute_url %}
+{% include "quartos/_form.html" with voltar=quarto.get_absolute_url %}
+{% endblock %}

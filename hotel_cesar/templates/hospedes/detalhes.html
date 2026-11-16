@@ -1,0 +1,52 @@
+{% extends "base.html" %}
+{% load hotel_extras %}
+{% block titulo %}{{ hospede.nome_completo }}{% endblock %}
+{% block cabecalho %}Hóspedes{% endblock %}
+{% block conteudo %}
+<div class="cabecalho-pagina">
+  <div><a href="{% url 'hospede_lista' %}" class="link-voltar"><i class="fa-solid fa-arrow-left me-1"></i> Voltar</a>
+    <h2>{{ hospede.nome_completo }}</h2><p class="text-muted mb-0">Hóspede #{{ hospede.pk|stringformat:"04d" }} · cadastrado em {{ hospede.data_cadastro|date:"d/m/Y H:i" }}</p></div>
+  <div class="d-flex gap-2 flex-wrap">
+    <a href="{% url 'reserva_criar' %}?hospede={{ hospede.pk }}" class="btn btn-gold"><i class="fa-solid fa-calendar-plus me-1"></i> Nova reserva</a>
+    <a href="{% url 'hospede_editar' hospede.pk %}" class="btn btn-navy"><i class="fa-solid fa-pen me-1"></i> Editar</a>
+    {% if perms.reservas.delete_hospede %}<a href="{% url 'hospede_excluir' hospede.pk %}" class="btn btn-outline-danger"><i class="fa-solid fa-trash-can me-1"></i> Excluir</a>{% endif %}
+  </div>
+</div>
+<div class="row g-4">
+  <div class="col-lg-4">
+    <div class="card card-painel">
+      <div class="card-body text-center border-bottom">
+        <div class="avatar-grande">{{ hospede.nome_completo|first|upper }}</div>
+        <h3 class="h5 mt-3 mb-0">{{ hospede.nome_completo }}</h3>
+        <small class="text-muted">{{ reservas|length }} reserva{{ reservas|length|pluralize }}</small>
+      </div>
+      <dl class="lista-dados">
+        <dt>CPF</dt><dd>{{ hospede.cpf|cpf }}</dd>
+        <dt>Telefone</dt><dd>{{ hospede.telefone|telefone }}</dd>
+        <dt>E-mail</dt><dd>{{ hospede.email|default:"—" }}</dd>
+        <dt>Nascimento</dt><dd>{{ hospede.data_nascimento|date:"d/m/Y"|default:"—" }}</dd>
+        <dt>Endereço</dt><dd>{{ hospede.endereco|default:"—" }}</dd>
+        <dt>Cidade/UF</dt><dd>{% if hospede.cidade %}{{ hospede.cidade }}{% if hospede.estado %}/{{ hospede.estado }}{% endif %}{% else %}—{% endif %}</dd>
+      </dl>
+    </div>
+  </div>
+  <div class="col-lg-8">
+    <div class="card card-painel">
+      <div class="card-header"><h3><i class="fa-solid fa-calendar-days"></i> Histórico de reservas</h3></div>
+      {% if reservas %}
+      <div class="table-responsive"><table class="table tabela mb-0 align-middle">
+        <thead><tr><th>Código</th><th>Quarto</th><th>Período</th><th>Diárias</th><th>Total</th><th>Status</th></tr></thead>
+        <tbody>{% for r in reservas %}
+          <tr><td><a href="{{ r.get_absolute_url }}" class="fw-semibold link-navy">{{ r.codigo }}</a></td>
+          <td>{{ r.quarto.numero }} <small class="text-muted">{{ r.quarto.get_tipo_display }}</small></td>
+          <td class="text-nowrap">{{ r.data_checkin|date:"d/m/Y" }} – {{ r.data_checkout|date:"d/m/Y" }}</td>
+          <td>{{ r.diarias }}</td><td class="text-nowrap">{{ r.valor_total|brl }}</td>
+          <td>{% include "partials/status_badge.html" with valor=r.status rotulo=r.get_status_display %}</td></tr>
+        {% endfor %}</tbody></table></div>
+      {% else %}
+        {% include "partials/vazio.html" with icone="fa-calendar-xmark" titulo="Nenhuma reserva" texto="Este hóspede ainda não possui reservas." %}
+      {% endif %}
+    </div>
+  </div>
+</div>
+{% endblock %}

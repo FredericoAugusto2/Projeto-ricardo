@@ -1,0 +1,25 @@
+{% load hotel_extras %}
+{% if reservas %}
+<div class="table-responsive"><table class="table tabela mb-0 align-middle">
+  <thead><tr><th>Código</th><th>Hóspede</th><th>Quarto</th><th>Entrada</th><th>Saída</th><th>Hóspedes</th><th>Status</th><th class="text-end">Ação</th></tr></thead>
+  <tbody>{% for r in reservas %}
+  <tr>
+    <td><a href="{{ r.get_absolute_url }}" class="fw-semibold link-navy">{{ r.codigo }}</a></td>
+    <td>{{ r.hospede.nome_completo }}<small class="d-block text-muted">CPF {{ r.hospede.cpf|cpf }}</small></td>
+    <td>{{ r.quarto.numero }} <small class="text-muted">{{ r.quarto.get_tipo_display }}</small>{% if r.quarto.status != 'DISPONIVEL' and r.status == 'CONFIRMADA' %}<small class="d-block text-danger"><i class="fa-solid fa-circle-exclamation"></i> {{ r.quarto.get_status_display }}</small>{% endif %}</td>
+    <td class="text-nowrap">{{ r.data_checkin|date:"d/m/Y" }}</td>
+    <td class="text-nowrap">{{ r.data_checkout|date:"d/m/Y" }}</td>
+    <td>{{ r.quantidade_hospedes }}</td>
+    <td>{% include "partials/status_badge.html" with valor=r.status rotulo=r.get_status_display %}</td>
+    <td class="text-end">
+      {% if r.pode_checkin %}
+      <form method="post" action="{% url 'checkin_realizar' r.pk %}" data-confirmar="Confirmar a chegada de {{ r.hospede.nome_completo }} no quarto {{ r.quarto.numero }}?">{% csrf_token %}
+        <button class="btn btn-sm btn-gold text-nowrap"><i class="fa-solid fa-right-to-bracket me-1"></i> Confirmar chegada</button></form>
+      {% elif r.status == 'EM_ANDAMENTO' %}<span class="small text-muted">Check-in feito</span>
+      {% else %}<a href="{{ r.get_absolute_url }}" class="btn btn-sm btn-light border">Ver</a>{% endif %}
+    </td>
+  </tr>{% endfor %}</tbody>
+</table></div>
+{% else %}
+<p class="text-muted text-center py-4 mb-0">{{ vazio|default:"Nenhum registro." }}</p>
+{% endif %}

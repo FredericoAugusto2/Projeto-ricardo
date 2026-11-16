@@ -1,0 +1,59 @@
+{% extends "base.html" %}
+{% block titulo %}Configurações{% endblock %}
+{% block cabecalho %}Configurações{% endblock %}
+{% block conteudo %}
+<div class="cabecalho-pagina"><div><h2>Configurações</h2><p class="text-muted mb-0">Conta do usuário, informações do hotel e mensagens recebidas.</p></div></div>
+<div class="row g-4">
+  <div class="col-lg-6">
+    <div class="card card-painel mb-4"><div class="card-header"><h3><i class="fa-solid fa-user-shield"></i> Minha conta</h3></div>
+      <dl class="lista-dados">
+        <dt>Usuário</dt><dd>{{ user.username }}</dd>
+        <dt>Nome</dt><dd>{{ user.get_full_name|default:"—" }}</dd>
+        <dt>Perfil</dt><dd>{% if user.is_superuser %}Administrador{% else %}Funcionário{% endif %}{% for g in grupos %} · {{ g }}{% endfor %}</dd>
+        <dt>Último acesso</dt><dd>{{ user.last_login|date:"d/m/Y H:i"|default:"—" }}</dd>
+      </dl>
+    </div>
+    <div class="card card-painel"><div class="card-header"><h3><i class="fa-solid fa-key"></i> Alterar senha</h3></div>
+      <div class="card-body">
+        <form method="post" novalidate>{% csrf_token %}
+          {% include "partials/erros_form.html" with form=form_senha %}
+          <div class="row g-3">
+            {% include "partials/campo.html" with campo=form_senha.old_password %}
+            {% include "partials/campo.html" with campo=form_senha.new_password1 col="col-md-6" %}
+            {% include "partials/campo.html" with campo=form_senha.new_password2 col="col-md-6" %}
+          </div>
+          <button class="btn btn-navy mt-3" type="submit"><i class="fa-solid fa-floppy-disk me-1"></i> Alterar senha</button>
+        </form>
+      </div>
+    </div>
+  </div>
+  <div class="col-lg-6">
+    <div class="card card-painel mb-4"><div class="card-header"><h3><i class="fa-solid fa-hotel"></i> Informações do hotel</h3></div>
+      <dl class="lista-dados">
+        <dt>Nome</dt><dd>{{ HOTEL.nome }}</dd>
+        <dt>Telefone</dt><dd>{{ HOTEL.telefone }}</dd>
+        <dt>E-mail</dt><dd>{{ HOTEL.email }}</dd>
+        <dt>Endereço</dt><dd>{{ HOTEL.endereco }}</dd>
+        <dt>Cadastros</dt><dd>{{ estatisticas.quartos }} quartos · {{ estatisticas.hospedes }} hóspedes · {{ estatisticas.reservas }} reservas</dd>
+      </dl>
+      <div class="card-body border-top small text-muted">Dados institucionais demonstrativos, definidos em <code>HOTEL_INFO</code> no arquivo <code>settings.py</code>.
+        {% if user.is_staff %}<a href="{% url 'admin:index' %}" class="btn btn-sm btn-outline-navy d-block mt-3"><i class="fa-solid fa-screwdriver-wrench me-1"></i> Abrir Django Admin (usuários e permissões)</a>{% endif %}
+      </div>
+    </div>
+    <div class="card card-painel" id="mensagens"><div class="card-header"><h3><i class="fa-solid fa-envelope"></i> Mensagens de contato</h3></div>
+      <ul class="list-group list-group-flush">
+        {% for m in mensagens %}
+        <li class="list-group-item {% if not m.lida %}mensagem-nova{% endif %}">
+          <div class="d-flex justify-content-between gap-2">
+            <div><strong>{{ m.assunto }}</strong> <small class="text-muted">· {{ m.nome }} &lt;{{ m.email }}&gt;</small>
+              <p class="small mb-1 mt-1">{{ m.mensagem|truncatechars:180 }}</p>
+              <small class="text-muted">{{ m.enviada_em|date:"d/m/Y H:i" }}</small></div>
+            {% if not m.lida %}<form method="post">{% csrf_token %}<button name="marcar_lida" value="{{ m.pk }}" class="btn btn-sm btn-acao" title="Marcar como lida"><i class="fa-solid fa-check"></i></button></form>{% endif %}
+          </div>
+        </li>
+        {% empty %}<li class="list-group-item text-muted text-center py-4">Nenhuma mensagem recebida.</li>{% endfor %}
+      </ul>
+    </div>
+  </div>
+</div>
+{% endblock %}

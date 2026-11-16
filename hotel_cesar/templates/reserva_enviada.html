@@ -1,0 +1,24 @@
+{% extends "base_site.html" %}
+{% load hotel_extras %}
+{% block titulo %}Solicitação enviada{% endblock %}
+{% block conteudo %}
+<section class="secao pt-top">
+  <div class="container" style="max-width:720px">
+    <div class="card card-reserva text-center"><div class="card-body p-5">
+      <div class="icone-sucesso"><i class="fa-solid fa-check"></i></div>
+      <h1 class="titulo-secao">Solicitação recebida!</h1>
+      <p class="text-muted">Obrigado, {{ reserva.hospede.nome_completo }}. Sua solicitação <strong>{{ reserva.codigo }}</strong> foi registrada com status <span class="badge badge-status badge-warning">Pendente</span>.</p>
+      <div class="resumo-box text-start my-4">
+        <div><span>Acomodação</span><strong>{{ reserva.quarto.get_tipo_display }}</strong></div>
+        <div><span>Entrada</span><strong>{{ reserva.data_checkin|date:"d/m/Y" }}</strong></div>
+        <div><span>Saída</span><strong>{{ reserva.data_checkout|date:"d/m/Y" }}</strong></div>
+        <div><span>Hóspedes</span><strong>{{ reserva.quantidade_hospedes }}</strong></div>
+        <div><span>Diárias</span><strong>{{ reserva.diarias }}</strong></div>
+        <div><span>Valor estimado</span><strong>{{ reserva.valor_total|brl }}</strong></div>
+      </div>
+      <p class="small text-muted">A reserva só é garantida após a confirmação da nossa equipe.</p>
+      <a href="{% url 'home' %}" class="btn btn-navy px-4">Voltar ao início</a>
+    </div></div>
+  </div>
+</section>
+{% endblock %}

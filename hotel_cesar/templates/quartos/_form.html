@@ -1,0 +1,19 @@
+<form method="post" enctype="multipart/form-data" novalidate>
+  {% csrf_token %}
+  {% include "partials/erros_form.html" %}
+  <div class="card card-painel mb-3"><div class="card-body"><div class="row g-3">
+    {% include "partials/campo.html" with campo=form.numero col="col-md-3" %}
+    {% include "partials/campo.html" with campo=form.tipo col="col-md-3" %}
+    {% include "partials/campo.html" with campo=form.capacidade col="col-md-2" %}
+    {% include "partials/campo.html" with campo=form.valor_diaria col="col-md-2" %}
+    {% include "partials/campo.html" with campo=form.status col="col-md-2" %}
+    {% include "partials/campo.html" with campo=form.descricao col="col-12" %}
+    {% include "partials/campo.html" with campo=form.imagem col="col-md-8" %}
+  </div>
+  <p class="small text-muted mt-3 mb-0"><i class="fa-solid fa-circle-info me-1"></i> O status <strong>Ocupado</strong> é definido automaticamente no check-in. Alterar a diária não modifica reservas já registradas.</p>
+  </div></div>
+  <div class="d-flex justify-content-end gap-2">
+    <a href="{{ voltar }}" class="btn btn-light border">Cancelar</a>
+    <button type="submit" class="btn btn-gold px-4"><i class="fa-solid fa-floppy-disk me-1"></i> Salvar</button>
+  </div>
+</form>

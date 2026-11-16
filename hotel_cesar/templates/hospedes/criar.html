@@ -1,0 +1,8 @@
+{% extends "base.html" %}
+{% block titulo %}Novo hóspede{% endblock %}
+{% block cabecalho %}Hóspedes{% endblock %}
+{% block conteudo %}
+{% url 'hospede_lista' as voltar %}
+{% include "partials/cabecalho_pagina.html" with titulo="Cadastrar hóspede" subtitulo="Campos marcados com * são obrigatórios." voltar=voltar %}
+{% include "hospedes/_form.html" with voltar=voltar %}
+{% endblock %}

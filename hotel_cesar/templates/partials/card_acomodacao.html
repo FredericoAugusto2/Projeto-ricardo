@@ -1,0 +1,16 @@
+{% load hotel_extras %}
+<div class="card card-acomodacao h-100">
+  <div class="card-acomodacao-img">
+    <img src="{{ a.imagem_url }}" alt="{{ a.nome }}" loading="lazy">
+    <span class="preco">a partir de <strong>{{ a.valor_minimo|brl }}</strong><small>/noite</small></span>
+  </div>
+  <div class="card-body d-flex flex-column">
+    <h3 class="h4 titulo-serif mb-2">{{ a.nome }}</h3>
+    <p class="text-muted flex-grow-1">{{ a.descricao|default:"Acomodação confortável e completa." }}</p>
+    <ul class="list-inline small text-muted mb-3">
+      <li class="list-inline-item me-3"><i class="fa-solid fa-user-group text-gold me-1"></i> até {{ a.capacidade }} pessoa{{ a.capacidade|pluralize }}</li>
+      <li class="list-inline-item"><i class="fa-solid fa-door-closed text-gold me-1"></i> {{ a.total }} quarto{{ a.total|pluralize }}</li>
+    </ul>
+    <a href="{% url 'reservar' %}?tipo={{ a.tipo }}" class="btn btn-outline-navy w-100">Reservar {{ a.nome }}</a>
+  </div>
+</div>

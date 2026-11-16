@@ -1,0 +1,5 @@
+{% if form.non_field_errors %}
+<div class="alert alert-danger"><i class="fa-solid fa-circle-exclamation me-2"></i>
+  {% for erro in form.non_field_errors %}{{ erro }}{% if not forloop.last %}<br>{% endif %}{% endfor %}
+</div>
+{% endif %}

@@ -1,0 +1,55 @@
+{% extends "base.html" %}
+{% load hotel_extras %}
+{% block titulo %}Hóspedes{% endblock %}
+{% block cabecalho %}Hóspedes{% endblock %}
+{% block conteudo %}
+<div class="cabecalho-pagina">
+  <div><h2>Gerenciamento de Hóspedes</h2><p class="text-muted mb-0">{% if paginator %}{{ paginator.count }}{% else %}{{ hospedes|length }}{% endif %} hóspede(s) encontrado(s)</p></div>
+  <a href="{% url 'hospede_criar' %}" class="btn btn-gold"><i class="fa-solid fa-user-plus me-1"></i> Novo Hóspede</a>
+</div>
+
+<div class="card card-painel mb-3">
+  <div class="card-body">
+    <form method="get" class="row g-2 align-items-end filtros">
+      <div class="col-md-4"><label class="form-label small">Pesquisa geral</label>
+        <div class="input-group"><span class="input-group-text"><i class="fa-solid fa-magnifying-glass"></i></span>
+        <input type="search" name="q" value="{{ request.GET.q }}" class="form-control" placeholder="Nome, CPF, e-mail ou telefone"></div></div>
+      <div class="col-md-3"><label class="form-label small">Filtrar por nome</label><input type="text" name="nome" value="{{ request.GET.nome }}" class="form-control" placeholder="Nome"></div>
+      <div class="col-md-3"><label class="form-label small">Filtrar por CPF</label><input type="text" name="cpf" value="{{ request.GET.cpf }}" class="form-control" data-mask="cpf" placeholder="000.000.000-00"></div>
+      <div class="col-md-2 d-flex gap-2"><button class="btn btn-navy flex-grow-1" type="submit">Filtrar</button>
+        {% if request.GET %}<a href="{% url 'hospede_lista' %}" class="btn btn-light border" title="Limpar filtros"><i class="fa-solid fa-xmark"></i></a>{% endif %}</div>
+    </form>
+  </div>
+</div>
+
+<div class="card card-painel">
+  {% if hospedes %}
+  <div class="table-responsive">
+    <table class="table tabela mb-0 align-middle">
+      <thead><tr><th>Código</th><th>Nome</th><th>CPF</th><th>Telefone</th><th>E-mail</th><th>Cadastro</th><th class="text-end">Ações</th></tr></thead>
+      <tbody>
+      {% for h in hospedes %}
+        <tr>
+          <td class="text-muted">#{{ h.pk|stringformat:"04d" }}</td>
+          <td><a href="{{ h.get_absolute_url }}" class="fw-semibold link-navy">{{ h.nome_completo }}</a>{% if h.total_reservas %}<small class="d-block text-muted">{{ h.total_reservas }} reserva{{ h.total_reservas|pluralize }}</small>{% endif %}</td>
+          <td class="text-nowrap">{{ h.cpf|cpf }}</td>
+          <td class="text-nowrap">{{ h.telefone|telefone }}</td>
+          <td>{{ h.email|default:"—" }}</td>
+          <td class="text-nowrap">{{ h.data_cadastro|date:"d/m/Y" }}</td>
+          <td class="text-end text-nowrap acoes">
+            <a href="{{ h.get_absolute_url }}" class="btn btn-sm btn-acao" title="Visualizar"><i class="fa-solid fa-eye"></i></a>
+            <a href="{% url 'hospede_editar' h.pk %}" class="btn btn-sm btn-acao" title="Editar"><i class="fa-solid fa-pen"></i></a>
+            {% if perms.reservas.delete_hospede %}<a href="{% url 'hospede_excluir' h.pk %}" class="btn btn-sm btn-acao perigo" title="Excluir"><i class="fa-solid fa-trash-can"></i></a>{% endif %}
+          </td>
+        </tr>
+      {% endfor %}
+      </tbody>
+    </table>
+  </div>
+  <div class="card-body pt-0">{% include "partials/paginacao.html" %}</div>
+  {% else %}
+    {% url 'hospede_criar' as link_novo %}
+    {% include "partials/vazio.html" with icone="fa-users-slash" titulo="Nenhum hóspede encontrado" texto="Ajuste os filtros ou cadastre o primeiro hóspede." link=link_novo link_texto="Novo Hóspede" %}
+  {% endif %}
+</div>
+{% endblock %}

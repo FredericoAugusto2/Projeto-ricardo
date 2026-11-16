@@ -1,0 +1,94 @@
+/* ==========================================================
+   HOTEL CESAR – Site institucional
+   ========================================================== */
+.site { background: var(--branco); }
+.site-nav { padding: 1rem 0; transition: background .3s, padding .3s, box-shadow .3s; background: transparent; }
+.site-nav .logo, .site-nav .nav-link { color: var(--branco); }
+.site-nav .nav-link { font-weight: 500; font-size: .92rem; opacity: .9; }
+.site-nav .nav-link:hover { color: var(--gold-500); opacity: 1; }
+.site-nav .navbar-toggler { color: var(--branco); border: 1px solid rgba(255,255,255,.4); }
+.site-nav.rolado, body:not(.pagina-home) .site-nav { background: var(--navy-900); padding: .6rem 0; box-shadow: 0 6px 24px rgba(0,0,0,.18); }
+@media (max-width: 991px) { .site-nav { background: var(--navy-900); } .site-nav .navbar-collapse { padding: 1rem 0; } }
+
+.mensagens-site { padding-top: 96px; }
+.pagina-home .mensagens-site { position: absolute; left: 0; right: 0; z-index: 5; }
+
+/* Hero */
+.hero { position: relative; min-height: 100vh; display: flex; align-items: center; background: var(--hero-img) center/cover no-repeat; color: var(--branco); }
+.hero-overlay { position: absolute; inset: 0; background: linear-gradient(100deg, rgba(11,22,38,.92) 0%, rgba(11,22,38,.65) 50%, rgba(11,22,38,.25) 100%); }
+.hero-conteudo { position: relative; padding-top: 6rem; padding-bottom: 4rem; }
+.hero h1 { font-family: var(--fonte-titulo); font-weight: 600; font-size: clamp(2.4rem, 6vw, 4.6rem); line-height: 1.02; margin: 1rem 0 1.25rem; letter-spacing: .01em; }
+.hero h1 span { color: var(--gold-500); font-weight: 700; }
+.hero .lead { max-width: 560px; font-size: 1.15rem; opacity: .9; margin-bottom: 2rem; }
+.eyebrow { display: inline-flex; gap: .3rem; align-items: center; color: var(--gold-500); text-transform: uppercase; letter-spacing: .22em; font-size: .78rem; font-weight: 700; }
+.eyebrow i { font-size: .65rem; }
+.eyebrow-escuro { display: inline-block; color: var(--gold-600); text-transform: uppercase; letter-spacing: .22em; font-size: .75rem; font-weight: 700; margin-bottom: .5rem; }
+.hero-scroll { position: absolute; bottom: 2rem; left: 50%; transform: translateX(-50%); color: var(--branco); width: 44px; height: 44px; border: 1px solid rgba(255,255,255,.4); border-radius: 50%; display: grid; place-items: center; animation: flutuar 2s ease-in-out infinite; }
+@keyframes flutuar { 50% { transform: translate(-50%, 8px); } }
+
+.page-hero { position: relative; padding: 11rem 0 5rem; background: var(--hero-img) center/cover no-repeat; color: var(--branco); }
+.page-hero h1 { font-family: var(--fonte-titulo); font-size: clamp(2.2rem, 5vw, 3.6rem); font-weight: 600; margin-top: .5rem; }
+.pt-top { padding-top: 9rem !important; }
+
+/* Seções */
+.secao { padding: 6rem 0; }
+.secao-clara { background: var(--cinza-50); }
+.secao-navy { background: radial-gradient(circle at 20% 0%, var(--navy-700), var(--navy-900) 70%); color: var(--branco); }
+.titulo-secao { font-family: var(--fonte-titulo); font-weight: 700; font-size: clamp(1.9rem, 3.5vw, 2.7rem); color: var(--navy-800); line-height: 1.1; margin-bottom: 1rem; }
+.text-claro { color: var(--branco) !important; }
+
+.sobre-imagem { position: relative; }
+.sobre-imagem img { border-radius: 20px; box-shadow: var(--sombra-md); }
+.sobre-selo { position: absolute; right: -10px; bottom: -20px; background: var(--gold-500); color: var(--navy-900); border-radius: 16px; padding: 1rem 1.4rem; text-align: center; box-shadow: var(--sombra-md); }
+.sobre-selo strong { font-family: var(--fonte-titulo); font-size: 2.2rem; display: block; line-height: 1; }
+.sobre-selo span { font-size: .75rem; text-transform: uppercase; letter-spacing: .14em; font-weight: 700; }
+.diferencial { display: flex; gap: .9rem; }
+.diferencial i { width: 44px; height: 44px; flex-shrink: 0; border-radius: 12px; background: var(--gold-100); color: var(--gold-600); display: grid; place-items: center; }
+.diferencial h6 { margin: 0 0 .2rem; font-weight: 700; color: var(--navy-800); }
+.diferencial p { margin: 0; font-size: .88rem; color: var(--cinza-500); }
+
+.card-acomodacao { border: 0; border-radius: 18px; overflow: hidden; box-shadow: var(--sombra-sm); transition: transform .3s, box-shadow .3s; }
+.card-acomodacao:hover { transform: translateY(-6px); box-shadow: var(--sombra-md); }
+.card-acomodacao-img { position: relative; aspect-ratio: 4/3; overflow: hidden; }
+.card-acomodacao-img img { width: 100%; height: 100%; object-fit: cover; transition: transform .6s; }
+.card-acomodacao:hover img { transform: scale(1.06); }
+.card-acomodacao .preco { position: absolute; left: 1rem; bottom: 1rem; background: rgba(11,22,38,.85); color: var(--branco); padding: .45rem .8rem; border-radius: 10px; font-size: .78rem; backdrop-filter: blur(6px); }
+.card-acomodacao .preco strong { color: var(--gold-500); font-size: 1rem; margin-left: .2rem; }
+
+.acomodacao-linha + .acomodacao-linha { margin-top: 5rem; }
+.preco-grande { font-size: 1.05rem; color: var(--cinza-500); }
+.preco-grande strong { font-family: var(--fonte-titulo); font-size: 2rem; color: var(--navy-800); }
+.lista-check { list-style: none; padding: 0; }
+.lista-check li { padding: .35rem 0 .35rem 1.8rem; position: relative; }
+.lista-check li::before { content: "\f00c"; font-family: "Font Awesome 6 Free"; font-weight: 900; position: absolute; left: 0; color: var(--gold-500); }
+
+.servico { padding: 2rem; border-radius: 18px; background: rgba(255,255,255,.04); border: 1px solid rgba(255,255,255,.08); height: 100%; transition: background .3s, transform .3s; }
+.servico:hover { background: rgba(255,255,255,.08); transform: translateY(-4px); }
+.servico-icone { width: 56px; height: 56px; border-radius: 14px; background: rgba(198,161,91,.15); color: var(--gold-500); display: grid; place-items: center; font-size: 1.4rem; margin-bottom: 1.2rem; }
+.servico h5 { font-weight: 700; }
+.servico p { opacity: .72; margin: 0; font-size: .92rem; }
+
+.card-reserva, .card-form { border: 0; border-radius: 20px; box-shadow: var(--sombra-md); }
+.card-reserva { margin-top: -1rem; border-top: 4px solid var(--gold-500); }
+.numero-destaque { border: 1px solid var(--cinza-200); border-radius: 14px; padding: 1rem; text-align: center; }
+.numero-destaque strong { font-family: var(--fonte-titulo); font-size: 2rem; color: var(--navy-800); display: block; line-height: 1; }
+.numero-destaque span { font-size: .78rem; color: var(--cinza-500); text-transform: uppercase; letter-spacing: .1em; }
+
+.contato-detalhes li { display: flex; gap: 1rem; margin-bottom: 1.3rem; }
+.contato-detalhes i { width: 46px; height: 46px; flex-shrink: 0; border-radius: 12px; background: var(--navy-700); color: var(--gold-500); display: grid; place-items: center; }
+.contato-detalhes strong { display: block; color: var(--navy-800); }
+.contato-detalhes span { color: var(--cinza-500); font-size: .92rem; }
+
+/* Rodapé */
+.site-footer { background: var(--navy-900); color: var(--branco); padding: 4.5rem 0 2rem; }
+.site-footer h6 { color: var(--gold-500); text-transform: uppercase; letter-spacing: .16em; font-size: .78rem; font-weight: 700; margin-bottom: 1rem; }
+.site-footer a { color: rgba(255,255,255,.75); text-decoration: none; }
+.site-footer a:hover { color: var(--gold-500); }
+.site-footer li { margin-bottom: .5rem; font-size: .92rem; }
+.text-footer { color: rgba(255,255,255,.65); font-size: .92rem; }
+.contato-lista i { color: var(--gold-500); width: 20px; }
+.contato-lista li { color: rgba(255,255,255,.75); }
+.site-footer hr { border-color: rgba(255,255,255,.12); margin: 2.5rem 0 1.5rem; }
+.redes { display: flex; gap: .6rem; }
+.redes a { width: 38px; height: 38px; border-radius: 50%; border: 1px solid rgba(255,255,255,.2); display: grid; place-items: center; }
+.redes a:hover { background: var(--gold-500); color: var(--navy-900); border-color: var(--gold-500); }
